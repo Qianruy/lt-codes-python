@@ -8,12 +8,12 @@ from random import choices
 
 SYSTEMATIC = False
 VERBOSE = False
-PACKET_SIZE = 65536
+# PACKET_SIZE = 65536
 # PACKET_SIZE = 32768
 # PACKET_SIZE = 16384
 # PACKET_SIZE = 4096
 # PACKET_SIZE = 1024
-# PACKET_SIZE = 512
+PACKET_SIZE = 512
 # PACKET_SIZE = 128
 ROBUST_FAILURE_PROBABILITY = 0.01
 NUMPY_TYPE = np.uint64
@@ -25,16 +25,17 @@ EPSILON = 0.0001
 class Symbol:
     __slots__ = ["index", "degree", "data", "neighbors"] # fixing attributes may reduce memory usage
 
-    def __init__(self, index, degree, data):
+    def __init__(self, index, degree=0, data=0, neighbors=None):
         self.index = index
         self.degree = degree
         self.data = data
+        self.neighbors = neighbors if neighbors is not None else set()
 
     def log(self, blocks_quantity):
-        neighbors, _ = generate_indexes(self.index, self.degree, blocks_quantity)
+        neighbors, _ = generate_indexes(self.index, self.degree, 0, blocks_quantity)
         print("symbol_{} degree={}\t {}".format(self.index, self.degree, neighbors))
 
-def generate_indexes(symbol_index, degree, blocks_quantity):
+def generate_indexes(symbol_index, degree, start, blocks_quantity):
     """Randomly get `degree` indexes, given the symbol index as a seed
 
     Generating with a seed allows saving only the seed (and the amount of degrees) 
@@ -51,9 +52,37 @@ def generate_indexes(symbol_index, degree, blocks_quantity):
         degree = 1     
     else:
         random.seed(symbol_index)
-        indexes = random.sample(range(blocks_quantity), degree)
+        indexes = random.sample(range(start, blocks_quantity), degree)
 
     return indexes, degree
+
+def generate_indexes_plow(i, redundancy, encode_range, deg):
+    """
+    Generate selection indexes with a random value for each k in the range (1 - 1/(k-1), 1 - 1/k)
+    
+    Args:
+        i (int): The index for the current input symbol.
+        redundancy (int): The redundancy factor used for the encoding.
+        encode_range (int): The range used for encoding.
+        deg (int): The degree (number of encoded symbols to map to).
+    
+    Returns:
+        list: A list of selected indexes.
+    """
+    selection_indexes = [i * redundancy]  # Add the first index
+    
+    alpha = 1.5
+    for k in range(2, deg + 1):
+        # Generate a random value between (1 - 1/(k-1)) and (1 - 1/k)
+        lower_bound = 1 - 1/(k-1)*alpha
+        upper_bound = 1 - 1/k*alpha
+        random_point = random.uniform(lower_bound, upper_bound)  
+        
+        # Calculate the index based on the random point
+        selected_index = int(i * redundancy + random_point * encode_range) - 1
+        selection_indexes.append(selected_index)
+
+    return [i * redundancy] + selection_indexes
 
 def log(process, iteration, total, start_time):
     """Log the processing in a gentle way, each seconds"""

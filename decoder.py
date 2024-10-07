@@ -1,4 +1,5 @@
 from core import *
+from collections import *
 
 def recover_graph(symbols, blocks_quantity):
     """ Get back the same random indexes (or neighbors), thanks to the symbol id as seed.
@@ -7,7 +8,7 @@ def recover_graph(symbols, blocks_quantity):
 
     for symbol in symbols:
         
-        neighbors, deg = generate_indexes(symbol.index, symbol.degree, blocks_quantity)
+        neighbors, deg = generate_indexes(symbol.index, symbol.degree, 0, blocks_quantity)
         symbol.neighbors = {x for x in neighbors}
         symbol.degree = deg
 
@@ -55,6 +56,7 @@ def decode(symbols, blocks_quantity):
     """
 
     symbols_n = len(symbols)
+    print(f"\n#symbols: {symbols_n}")
     assert symbols_n > 0, "There are no symbols to decode."
 
     # We keep `blocks_n` notation and create the empty list
@@ -62,9 +64,10 @@ def decode(symbols, blocks_quantity):
     blocks = [None] * blocks_n
 
     # Recover the degrees and associated neighbors using the seed (the index, cf. encoding).
-    symbols = recover_graph(symbols, blocks_n)
-    print("Graph built back. Ready for decoding.", flush=True)
+    # symbols = recover_graph(symbols, blocks_n)
+    # print("Graph built back. Ready for decoding.", flush=True)
     
+    empty_symbol = 0
     solved_blocks_count = 0
     iteration_solved_count = 0
     start_time = time.time()
@@ -72,19 +75,24 @@ def decode(symbols, blocks_quantity):
     while iteration_solved_count > 0 or solved_blocks_count == 0:
     
         iteration_solved_count = 0
+        
 
         # Search for solvable symbols
         for i, symbol in enumerate(symbols):
 
             # Check the current degree. If it's 1 then we can recover data
+            if symbol.degree == 0: continue
             if symbol.degree == 1: 
 
                 iteration_solved_count += 1 
-                block_index = next(iter(symbol.neighbors)) 
-                symbols.pop(i)
+                block_index = next(iter(symbol.neighbors), None) 
+                symbol.degree -= 1
+                # symbols.pop(i)
 
                 # This symbol is redundant: another already helped decoding the same block
-                if blocks[block_index] is not None:
+                if block_index is None: 
+                    empty_symbol += 1
+                if block_index is None or blocks[block_index] is not None:
                     continue
 
                 blocks[block_index] = symbol.data
@@ -98,7 +106,16 @@ def decode(symbols, blocks_quantity):
 
                 # Reduce the degrees of other symbols that contains the solved block as neighbor             
                 reduce_neighbors(block_index, blocks, symbols)
+    # DEBUG 
+    degrees = {}         
+    for i, symbol in enumerate(symbols):
+        if symbol.degree == 0: continue
+        else: degrees[symbol.degree] = degrees.get(symbol.degree, 0) + 1
+    degrees_sorted = OrderedDict(sorted(degrees.items()))
 
-    print("\n----- Solved Blocks {:2}/{:2} --".format(solved_blocks_count, blocks_n))
+    print("\n----- Solved Blocks {:2}/{:2} ---".format(solved_blocks_count, blocks_n))
+    print(f"----- Empty Symbol: {empty_symbol} ---")
+    for deg, cnt in degrees_sorted.items():
+        print(f"{cnt} symbols with degree {deg}")
 
     return np.asarray(blocks), solved_blocks_count

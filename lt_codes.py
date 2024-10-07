@@ -5,9 +5,12 @@ import os
 import math
 import argparse
 import numpy as np
+import random
 import core
 from encoder import encode
 from decoder import decode
+
+LOSS_PROBABILITY = 0.01
 
 def blocks_read(file, filesize):
     """ Read the given file by blocks of `core.PACKET_SIZE` and use np.frombuffer() improvement.
@@ -66,6 +69,7 @@ if __name__ == "__main__":
     parser.add_argument("--systematic", help="ensure that the k first drops are exactaly the k first blocks (systematic LT Codes)", action="store_true")
     parser.add_argument("--verbose", help="increase output verbosity", action="store_true")
     parser.add_argument("--x86", help="avoid using np.uint64 for x86-32bits systems", action="store_true")
+    parser.add_argument("-t", "--codetype", help="select wanted code type.", default="LT")
     args = parser.parse_args()
 
     core.NUMPY_TYPE = np.uint32 if args.x86 else core.NUMPY_TYPE
@@ -75,6 +79,7 @@ if __name__ == "__main__":
     with open(args.filename, "rb") as file:
 
         print("Redundancy: {}".format(args.redundancy))
+        print("Code Type: {}".format(args.codetype))
         print("Systematic: {}".format(core.SYSTEMATIC))
 
         filesize = os.path.getsize(args.filename)
@@ -88,12 +93,13 @@ if __name__ == "__main__":
         print("Blocks: {}".format(file_blocks_n))
         print("Drops: {}\n".format(drops_quantity))
 
+        # HERE: Simulating the loss of packets?
+
         # Generating symbols (or drops) from the blocks
         file_symbols = []
-        for curr_symbol in encode(file_blocks, drops_quantity=drops_quantity):
-            file_symbols.append(curr_symbol)
-
-        # HERE: Simulating the loss of packets?
+        for curr_symbol in encode(file_blocks, args.redundancy, args.codetype):
+            if random.random() > LOSS_PROBABILITY:
+                file_symbols.append(curr_symbol)
 
         # Recovering the blocks from symbols
         recovered_blocks, recovered_n = decode(file_symbols, blocks_quantity=file_blocks_n)
