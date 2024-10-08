@@ -5,6 +5,7 @@ import time
 import numpy as np
 import random
 from random import choices
+from numpy.random import Generator
 
 SYSTEMATIC = False
 VERBOSE = False
@@ -76,13 +77,16 @@ def generate_indexes_plow(i, redundancy, encode_range, deg):
         # Generate a random value between (1 - 1/(k-1)) and (1 - 1/k)
         lower_bound = 1 - 1/(k-1)*alpha
         upper_bound = 1 - 1/k*alpha
-        random_point = random.uniform(lower_bound, upper_bound)  
+        # random_point = random.uniform(lower_bound, upper_bound) 
+        rng = np.random.default_rng()
+        random_point = rng.poisson(upper_bound*encode_range-1) 
+        while random_point > encode_range: random_point = rng.poisson(upper_bound*encode_range-1)  
         
         # Calculate the index based on the random point
         selected_index = int(i * redundancy + random_point * encode_range) - 1
         selection_indexes.append(selected_index)
 
-    return [i * redundancy] + selection_indexes
+    return selection_indexes
 
 def log(process, iteration, total, start_time):
     """Log the processing in a gentle way, each seconds"""
