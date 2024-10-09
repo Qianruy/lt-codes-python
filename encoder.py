@@ -1,7 +1,7 @@
 from core import *
 from distributions import *
 
-WINDOWSIZE = 50
+WINDOWSIZE = 300
 min_degree = 5
 max_degree = 5
 
@@ -40,6 +40,7 @@ def encode(blocks, redundancy, codetype):
     drops_quantity = int(blocks_n * redundancy)
     assert blocks_n <= drops_quantity, "Because of the unicity in the random neighbors, it is need to drop at least the same amount of blocks"
 
+    print(f"WINDOWSIZE = {WINDOWSIZE}")
     print("Generating graph...")
     start_time = time.time()
 
@@ -79,14 +80,15 @@ def encode(blocks, redundancy, codetype):
             deg = random.randint(min_degree, max_degree) # some symbols will be empty
             # selection_indexes = [i*redundancy] + [i*redundancy + int(encode_range*(k-1)/k)-1 for k in range(2,deg+1)]
             selection_indexes = generate_indexes_plow(i, redundancy, encode_range, deg)
+            print(len(symbols), selection_indexes)
 
             # Xor the input block to each selected encoded symbol
             for idx in selection_indexes:
-                idx = math.ceil(idx)
+                
                 while idx >= len(symbols): 
                     symbol = Symbol(index=len(symbols)+1)
                     symbols.append(symbol)
-                    yield symbol
+
                 if symbols[idx].degree == 0: symbols[idx].data = blocks[i]
                 else: symbols[idx].data = np.bitwise_xor(symbols[idx].data, blocks[i])
 
@@ -95,13 +97,13 @@ def encode(blocks, redundancy, codetype):
                 symbols[idx].neighbors.add(i)
 
             # Create a new symbol to the end of symbol list
-            symbols.append(Symbol(index=len(symbols)+1))
+            # symbols.append(Symbol(index=len(symbols)+1))
+
+            # if not i % 3000:
+            #     symbols = [Symbol(index=len(symbols)+1, data=blocks[i]) for i in range(WINDOWSIZE)]
             
             log("Encoding", i, blocks_n, start_time)
-
-            yield symbols[i]
         
-        for i in range(blocks_n, blocks_n + encode_range):
-            yield symbols[i]
+        for symbol in symbols: yield symbol
 
     print("\n----- Correctly dropped {} symbols (packet size={})".format(drops_quantity, PACKET_SIZE))

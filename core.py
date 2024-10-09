@@ -70,9 +70,9 @@ def generate_indexes_plow(i, redundancy, encode_range, deg):
     Returns:
         list: A list of selected indexes.
     """
-    selection_indexes = [i * redundancy]  # Add the first index
+    selection_indexes = [math.ceil(i * redundancy)]  # Add the first index
     
-    alpha = 1.5
+    alpha = 1
     for k in range(2, deg + 1):
         # Generate a random value between (1 - 1/(k-1)) and (1 - 1/k)
         lower_bound = 1 - 1/(k-1)*alpha
@@ -83,7 +83,7 @@ def generate_indexes_plow(i, redundancy, encode_range, deg):
         while random_point > encode_range: random_point = rng.poisson(upper_bound*encode_range-1)  
         
         # Calculate the index based on the random point
-        selected_index = int(i * redundancy + random_point * encode_range) - 1
+        selected_index = int(i * redundancy + random_point - 1)
         selection_indexes.append(selected_index)
 
     return selection_indexes
