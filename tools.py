@@ -6,6 +6,10 @@ import numpy as np
 import random
 from random import choices
 from numpy.random import Generator
+from random import random
+from abc import *
+from dataclasses import dataclass
+from typing import *
 
 config = {
     "SYSTEMATIC": False,
@@ -15,6 +19,23 @@ config = {
     "LOSS_PROBABILITY": 0.01
 }
 
+# for alignement, index=0 corresponds to no input. 
+# actual packet indices start from 1. 
+
+@dataclass
+class CodewordBatch:
+    index   : np.ndarray
+    data    : np.ndarray
+    degree  : np.ndarray
+
+@dataclass
+class Codeword:
+    index   : np.ndarray 
+    data    : np.ndarray
+    degree  : int
+
+SYSTEMATIC = False
+VERBOSE = False
 # PACKET_SIZE = 65536
 # PACKET_SIZE = 32768
 # PACKET_SIZE = 16384
