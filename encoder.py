@@ -1,5 +1,110 @@
-from core import *
+from tools import *
 from distributions import *
+
+class Encoder(ABC):
+    @abstractmethod
+    def get_one(self) -> Codeword:
+        """
+        get codeword from encoder
+        """
+        pass
+
+    @abstractmethod
+    def get_bat(self, batch: int) -> CodewordBatch:
+        """
+        get codeword from encoder
+        """
+        pass
+
+    @abstractmethod
+    def put_one(self, data: np.ndarray):
+        """
+        put input into encoder
+        """
+        pass
+
+    @abstractmethod
+    def put_bat(self, data: np.ndarray):
+        """
+        put input into encoder
+        """
+        pass
+
+class LubyEncoder(Encoder):
+    """
+    Luby Transform Encoder
+    @field(data): all the inputs, array of shape [l]
+    @field(prob): cummulative sum of degree distribution probability
+    """
+    def __init__(self, dd: np.ndarray, psize: int):
+        """
+        @param(dd): degree distribution array of shape [d]
+        @param(psize): the input code word size
+        """
+        super().__init__()
+        self.data = np.zeros((1, psize), dtype=np.uint8)
+        self.prob = dd.cumsum(0)
+        self.prob[-1] = 1
+
+    def get_one(self) -> Codeword:
+        """
+        @return sample a degree d, and xor d inputs into a codeword
+        """
+        degree  = (np.random.random() > self.prob).sum()
+        index   = np.random.randint(1, self.data.shape[0], size=(degree,))
+        data    = np.bitwise_xor.reduce(self.data[index])
+        return Codeword(index, data, degree)
+
+    def get_bat(self, batch: int) -> CodewordBatch:
+        """
+        @param(batch) the size of the batch
+        @return sample multiple degrees [..d], for each [..d], xor d inputs into a codeword
+        """
+        degree  = (np.random.random(size=(batch, 1)) > self.prob).sum(axis=-1) + 1
+        index   = np.random.randint(1, self.data.shape[0], size=(batch, degree.max(),))
+        index   = (np.arange(1, degree.max() + 1) <= degree.reshape(batch, 1)) * index
+        data    = np.bitwise_xor.reduce(self.data[index])
+        return CodewordBatch(index, data, degree)
+
+    def put_one(self, data: np.ndarray):
+        """
+        @param(data) one input packet
+        """
+        assert data.dtype == np.uint8
+        assert len(data.shape) == 1
+        assert data.shape[-1] == self.data.shape[-1]
+        self.data = np.concatenate([self.data, data.reshape(1, -1)], axis=0)
+
+    def put_bat(self, data: np.ndarray):
+        """
+        @param(data) a batch of input packets 
+        """
+        assert data.dtype == np.uint8
+        assert len(data.shape) == 2
+        assert data.shape[-1] == self.data.shape[-1]
+        self.data = np.concatenate([self.data, data], axis=0)
+
+class PlowEncoder(Encoder):
+    """
+    Plow Encoder for real time streaming
+    @field(ring) the ring buffer for all data packets
+    @field(head) the head pointer for ring buffer
+    @field(tail) the tail pointer for ring buffer
+    """
+    def __init__(self, rsize: int):
+        """
+        @param(rsize): the maximum size of ring buffer
+        """
+        self.ring = np.zeros()
+        self.head = 0
+        self.tail = 0
+
+if __name__ == '__main__':
+    encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
+    encoder.put_one(np.zeros(1024, dtype=np.uint8))
+    encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
+    print(encoder.get_bat(7))
+    print(encoder.get_one())
 
 WINDOWSIZE = 300
 min_degree = 5

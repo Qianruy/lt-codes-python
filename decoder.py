@@ -1,5 +1,56 @@
-from core import *
+import numpy as np
+from random import random
+from abc import *
+from dataclasses import dataclass
+from typing import *
+from tools import *
 from collections import *
+
+# for alignement, index=0 corresponds to no input. 
+# actual packet indices start from 1. 
+
+class Decoder(ABC):
+    @abstractmethod
+    def put_one(self, code: Codeword):
+        """
+        put codeword into decoder
+        """
+        pass
+
+    @abstractmethod
+    def put_bat(self, code: CodewordBatch):
+        pass
+
+    @abstractmethod
+    def get(self) -> Optional[bytes]:
+        """
+        get input from decoder
+        """
+        pass
+
+class LTDecoder(Decoder):
+    """
+    Luby Transform Decoder
+    @field(buff): the buffer of received codewords
+    @field(data): decoded data
+    """
+    def __init__(self, d: int):
+        """
+        @param(d): 
+        """
+        pass
+    
+    def put_one(self, code: Codeword):
+        pass
+
+    def put_bat(self, code: CodewordBatch):
+        pass
+    
+    def get_one(self) -> Optional[bytes]: 
+        pass
+    
+    def get_all(self) -> Optional[bytes]: 
+        pass
 
 def recover_graph(symbols, blocks_quantity):
     """ Get back the same random indexes (or neighbors), thanks to the symbol id as seed.
