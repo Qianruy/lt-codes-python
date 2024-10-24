@@ -6,9 +6,13 @@ from typing import *
 from tools import *
 from symbol import *
 from distributions import *
+<<<<<<< HEAD
 import numpy as np
 from numpy.random import Generator
 from collections import deque
+=======
+from joblib import *
+>>>>>>> 6274519 (Update: parallel decoding and encoding.)
 
 class Encoder(ABC):
     @abstractmethod
@@ -60,7 +64,7 @@ class LubyEncoder(Encoder):
         """
         @return sample a degree d. then xor d inputs into a codeword
         """
-        degree  = (self.rng.random() > self.prob).sum()
+        degree  = (self.rng.random() > self.prob).sum() + 1
         index   = self.rng.choice(np.arange(1, self.data.shape[0]), (self.prob.shape[0],), replace=False)
         index   = (np.arange(1, self.prob.shape[0] + 1) <= degree) * index
         data    = np.bitwise_xor.reduce(self.data[index])
@@ -72,9 +76,16 @@ class LubyEncoder(Encoder):
         @return sample multiple degrees [..d], for each [..d], xor d inputs into a codeword
         """
         degree  = (self.rng.random(size=(batch, 1)) > self.prob).sum(axis=-1) + 1
-        index   = self.rng.choice(np.arange(1, self.data.shape[0]), (batch, self.prob.shape[0],), replace=False)
-        index   = (np.arange(1, self.prob.shape[0] + 1) <= degree.reshape(batch, 1)) * index
-        data    = np.bitwise_xor.reduce(self.data[index])
+        index   = np.zeros((batch, self.prob.shape[0]), dtype=np.int_)
+        seed = self.rng.random(size=batch)
+        @delayed
+        def fill(b):
+            rng = np.random.default_rng(b + 42 + int(10 * seed[b]))
+            index[b] = rng.choice(np.arange(1, self.data.shape[0]), (self.prob.shape[0],), replace=False)
+        Parallel(n_jobs=8, require='sharedmem')(fill(b) for b in range(batch))
+        index   = (np.arange(1, self.prob.shape[0] + 1) <= degree.reshape(-1, 1)) * index
+        print(index)
+        data    = np.bitwise_xor.reduce(self.data[index], axis=1)
         return CodewordBatch(index, data, degree)
 
     def put_one(self, data: np.ndarray):
@@ -305,8 +316,5 @@ def encode(blocks, redundancy, codetype):
 if __name__ == '__main__':
     encoder = LubyEncoder(np.array([0.5, 0.25, 0.25]), 1024)
     encoder.put_one(np.zeros(1024, dtype=np.uint8))
-    encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
-    print(encoder.get_bat(7))
-    print(encoder.get_one())
     print(encoder.get_one())
     print(encoder.get_one())
