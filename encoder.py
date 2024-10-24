@@ -45,22 +45,24 @@ class LubyEncoder(Encoder):
     @field(data): all the inputs, array of shape [l]
     @field(prob): cummulative sum of degree distribution probability
     """
-    def __init__(self, dd: np.ndarray, psize: int):
+    def __init__(self, dd: np.ndarray, block: int, seed: int = 42):
         """
         @param(dd): degree distribution array of shape [d]
-        @param(psize): the input code word size
+        @param(block): the input code word size
         """
         super().__init__()
-        self.data = np.zeros((1, psize), dtype=np.uint8)
+        self.data = np.zeros((1, block), dtype=np.uint8)
         self.prob = dd.cumsum(0)
         self.prob[-1] = 1
+        self.rng = np.random.default_rng(seed=seed)
 
     def get_one(self) -> Codeword:
         """
-        @return sample a degree d, and xor d inputs into a codeword
+        @return sample a degree d. then xor d inputs into a codeword
         """
-        degree  = (np.random.random() > self.prob).sum()
-        index   = np.random.randint(1, self.data.shape[0], size=(degree,))
+        degree  = (self.rng.random() > self.prob).sum()
+        index   = self.rng.choice(np.arange(1, self.data.shape[0]), (self.prob.shape[0],), replace=False)
+        index   = (np.arange(1, self.prob.shape[0] + 1) <= degree) * index
         data    = np.bitwise_xor.reduce(self.data[index])
         return Codeword(index, data, degree)
 
@@ -69,9 +71,9 @@ class LubyEncoder(Encoder):
         @param(batch) the size of the batch
         @return sample multiple degrees [..d], for each [..d], xor d inputs into a codeword
         """
-        degree  = (np.random.random(size=(batch, 1)) > self.prob).sum(axis=-1) + 1
-        index   = np.random.randint(1, self.data.shape[0], size=(batch, degree.max(),))
-        index   = (np.arange(1, degree.max() + 1) <= degree.reshape(batch, 1)) * index
+        degree  = (self.rng.random(size=(batch, 1)) > self.prob).sum(axis=-1) + 1
+        index   = self.rng.choice(np.arange(1, self.data.shape[0]), (batch, self.prob.shape[0],), replace=False)
+        index   = (np.arange(1, self.prob.shape[0] + 1) <= degree.reshape(batch, 1)) * index
         data    = np.bitwise_xor.reduce(self.data[index])
         return CodewordBatch(index, data, degree)
 
@@ -96,17 +98,14 @@ class LubyEncoder(Encoder):
 class PlowEncoder(Encoder):
     """
     Plow Encoder for real time streaming
-    @field(ring) the ring buffer for all data packets
-    @field(head) the head pointer for ring buffer
-    @field(tail) the tail pointer for ring buffer
+    @field(ring) the ring buffer for all inputs
     """
     def __init__(self, rsize: int):
         """
         @param(rsize): the maximum size of ring buffer
         """
         self.ring = RingBuff()
-        self.head = 0
-        self.tail = 0
+        self.buff = CodewordBatch()
 
     def put_one(self, data: np.ndarray):
         pass
@@ -114,6 +113,7 @@ class PlowEncoder(Encoder):
     def get_one(self) -> Codeword:
         pass
 
+<<<<<<< HEAD
 def get_degrees_from(distribution_name, N, k):
     """ Returns the random degrees from a given distribution of probabilities.
     The degrees distribution must look like a Poisson distribution and the 
@@ -300,9 +300,13 @@ def encode(blocks, redundancy, codetype):
 
     print("\n----- Correctly dropped {} symbols (packet size={})".format(drops_quantity, PACKET_SIZE))
 
+=======
+>>>>>>> 331eb81 (Update: add seed to random generator.)
 if __name__ == '__main__':
-    encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
+    encoder = LubyEncoder(np.array([0.5, 0.25, 0.25]), 1024)
     encoder.put_one(np.zeros(1024, dtype=np.uint8))
     encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
     print(encoder.get_bat(7))
+    print(encoder.get_one())
+    print(encoder.get_one())
     print(encoder.get_one())
