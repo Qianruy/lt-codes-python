@@ -1,3 +1,8 @@
+import numpy as np
+from random import random
+from abc import *
+from dataclasses import dataclass
+from typing import *
 from tools import *
 from distributions import *
 
@@ -95,16 +100,15 @@ class PlowEncoder(Encoder):
         """
         @param(rsize): the maximum size of ring buffer
         """
-        self.ring = np.zeros()
+        self.ring = RingBuff()
         self.head = 0
         self.tail = 0
 
-if __name__ == '__main__':
-    encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
-    encoder.put_one(np.zeros(1024, dtype=np.uint8))
-    encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
-    print(encoder.get_bat(7))
-    print(encoder.get_one())
+    def put_one(self, data: np.ndarray):
+        pass
+
+    def get_one(self) -> Codeword:
+        pass
 
 WINDOWSIZE = 300
 min_degree = 5
@@ -151,30 +155,7 @@ def encode(blocks, redundancy, codetype):
 
     print("Ready for encoding.", flush=True)
 
-    if codetype == "LT":
-        # Generate random indexes associated to random degrees, seeded with the symbol id
-        random_degrees = get_degrees_from("robust", blocks_n, k=drops_quantity)
-
-        for i in range(drops_quantity):
-            
-            # Get the random selection, generated precedently (for performance)
-            selection_indexes, deg = generate_indexes(i, random_degrees[i], 0, blocks_n)
-            # Xor each selected array within each other gives the drop (or just take one block if there is only one selected)
-            drop = blocks[selection_indexes[0]]
-            for n in range(1, deg):
-                drop = np.bitwise_xor(drop, blocks[selection_indexes[n]])
-                # drop = drop ^ blocks[selection_indexes[n]] # according to my tests, this has the same performance
-
-            # Create symbol, then log the process
-            symbol = Symbol(index=i, degree=deg, data=drop, neighbors=selection_indexes)
-            
-            if VERBOSE:
-                symbol.log(blocks_n)
-
-            log("Encoding", i, drops_quantity, start_time)
-
-            yield symbol
-    elif codetype == "PLOW":
+    if codetype == "PLOW":
 
         # preparation before start encoding
         encode_range = int(WINDOWSIZE*redundancy)
@@ -212,3 +193,10 @@ def encode(blocks, redundancy, codetype):
         for symbol in symbols: yield symbol
 
     print("\n----- Correctly dropped {} symbols (packet size={})".format(drops_quantity, PACKET_SIZE))
+
+if __name__ == '__main__':
+    encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
+    encoder.put_one(np.zeros(1024, dtype=np.uint8))
+    encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
+    print(encoder.get_bat(7))
+    print(encoder.get_one())
