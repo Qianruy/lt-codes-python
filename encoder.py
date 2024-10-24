@@ -1,3 +1,8 @@
+import numpy as np
+from random import random
+from abc import *
+from dataclasses import dataclass
+from typing import *
 from tools import *
 from distributions import *
 import numpy as np
@@ -98,9 +103,15 @@ class PlowEncoder(Encoder):
         """
         @param(rsize): the maximum size of ring buffer
         """
-        self.ring = np.zeros()
+        self.ring = RingBuff()
         self.head = 0
         self.tail = 0
+
+    def put_one(self, data: np.ndarray):
+        pass
+
+    def get_one(self) -> Codeword:
+        pass
 
 # if __name__ == '__main__':
 #     encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
@@ -294,3 +305,10 @@ def encode(blocks, redundancy, codetype):
         for symbol in symbols: yield symbol
 
     print("\n----- Correctly dropped {} symbols (packet size={})".format(drops_quantity, PACKET_SIZE))
+
+if __name__ == '__main__':
+    encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
+    encoder.put_one(np.zeros(1024, dtype=np.uint8))
+    encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
+    print(encoder.get_bat(7))
+    print(encoder.get_one())
