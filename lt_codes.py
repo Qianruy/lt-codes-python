@@ -8,9 +8,9 @@ import numpy as np
 import random
 import core
 from encoder import encode
-from decoder import decode
+from decoder import decode, decode_incremental
 
-LOSS_PROBABILITY = 0.01
+
 
 def blocks_read(file, filesize):
     """ Read the given file by blocks of `core.PACKET_SIZE` and use np.frombuffer() improvement.
@@ -73,14 +73,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     core.NUMPY_TYPE = np.uint32 if args.x86 else core.NUMPY_TYPE
-    core.SYSTEMATIC = True if args.systematic else core.SYSTEMATIC 
-    core.VERBOSE = True if args.verbose else core.VERBOSE    
+    core.config["SYSTEMATIC"] = True if args.systematic else core.config["SYSTEMATIC"]
+    core.config["VERBOSE"] = True if args.verbose else core.config["VERBOSE"]    
 
     with open(args.filename, "rb") as file:
 
         print("Redundancy: {}".format(args.redundancy))
         print("Code Type: {}".format(args.codetype))
-        print("Systematic: {}".format(core.SYSTEMATIC))
+        print("Systematic: {}".format(core.config["SYSTEMATIC"]))
 
         filesize = os.path.getsize(args.filename)
         print("Filesize: {} bytes".format(filesize))
@@ -93,24 +93,32 @@ if __name__ == "__main__":
         print("Blocks: {}".format(file_blocks_n))
         print("Drops: {}\n".format(drops_quantity))
 
-        # HERE: Simulating the loss of packets?
-
         # Generating symbols (or drops) from the blocks
         file_symbols = []
+        recovered_blocks, recovered_n = [None] * file_blocks_n, 0
+        total_delay = 0
         for curr_symbol in encode(file_blocks, args.redundancy, args.codetype):
-            if random.random() > LOSS_PROBABILITY:
+            if random.random() >= core.config["LOSS_PROBABILITY"]: # Simulating the loss of packets
                 file_symbols.append(curr_symbol)
 
-        # Recovering the blocks from symbols
-        recovered_blocks, recovered_n = decode(file_symbols, blocks_quantity=file_blocks_n)
-        
-        if core.VERBOSE:
-            print(recovered_blocks)
-            print("------ Blocks :  \t-----------")
-            print(file_blocks)
+            if args.codetype in ["PLOW", "WALZER"] :
+                recovered_n, curr_delay = decode_incremental(file_symbols, recovered_blocks, recovered_n, 
+                                                                               args.redundancy, args.codetype)
+                total_delay += curr_delay
 
+        if args.codetype == "LT":
+            # Recovering the blocks from symbols
+            recovered_blocks, recovered_n = decode(file_symbols, blocks_quantity=file_blocks_n, code_type=args.codetype)
+        
+        # if core.VERBOSE:
+        #     print(recovered_blocks)
+        #     print("------ Blocks :  \t-----------")
+        #     print(file_blocks)
+
+        print("\n----- Solved Blocks {:2}/{:2} ---".format(recovered_n, file_blocks_n))
+        print(f"----- Avg Delayed Timeframe: {total_delay/recovered_n} ---")
         if recovered_n != file_blocks_n:
-            print("All blocks are not recovered, we cannot proceed the file writing")
+            print("Blocks are not all recovered, we cannot proceed the file writing")
             exit()
 
         splitted = args.filename.split(".")

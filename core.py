@@ -7,21 +7,28 @@ import random
 from random import choices
 from numpy.random import Generator
 
-SYSTEMATIC = False
-VERBOSE = False
+config = {
+    "SYSTEMATIC": False,
+    "VERBOSE": False,
+    "WINDOWSIZE": 700,
+    "LOSS_PROBABILITY": 0.01
+}
+
 # PACKET_SIZE = 65536
 # PACKET_SIZE = 32768
 # PACKET_SIZE = 16384
 # PACKET_SIZE = 4096
 # PACKET_SIZE = 1024
-PACKET_SIZE = 512
-# PACKET_SIZE = 128
+# PACKET_SIZE = 512
+PACKET_SIZE = 128
 ROBUST_FAILURE_PROBABILITY = 0.01
 NUMPY_TYPE = np.uint64
 # NUMPY_TYPE = np.uint32
 # NUMPY_TYPE = np.uint16
 # NUMPY_TYPE = np.uint8
 EPSILON = 0.0001
+min_degree = 5
+max_degree = 5
 
 class Symbol:
     __slots__ = ["index", "degree", "data", "neighbors"] # fixing attributes may reduce memory usage
@@ -48,16 +55,16 @@ def generate_indexes(symbol_index, degree, start, blocks_quantity):
 
     To be sure to get the same random indexes, we need to pass 
     """
-    if SYSTEMATIC and symbol_index < blocks_quantity:
+    if config["SYSTEMATIC"] and symbol_index < blocks_quantity:
         indexes = [symbol_index]               
         degree = 1     
     else:
         random.seed(symbol_index)
-        indexes = random.sample(range(start, blocks_quantity), degree)
+        indexes = random.sample(range(start, start + blocks_quantity), degree)
 
     return indexes, degree
 
-def generate_indexes_plow(i, redundancy, encode_range, deg):
+def generate_indexes_plow(i, redundancy, deg):
     """
     Generate selection indexes with a random value for each k in the range (1 - 1/(k-1), 1 - 1/k)
     
@@ -70,20 +77,27 @@ def generate_indexes_plow(i, redundancy, encode_range, deg):
     Returns:
         list: A list of selected indexes.
     """
+    encode_range = int(config["WINDOWSIZE"] * redundancy)
     selection_indexes = [math.ceil(i * redundancy)]  # Add the first index
     
     alpha = 1
+    # TODO: pre-determined seeds
+    rng = np.random.default_rng()
     for k in range(2, deg + 1):
         # Generate a random value between (1 - 1/(k-1)) and (1 - 1/k)
-        lower_bound = 1 - 1/(k-1)*alpha
+        # lower_bound = 1 - 1/(k-1)*alpha
         upper_bound = 1 - 1/k*alpha
-        # random_point = random.uniform(lower_bound, upper_bound) 
-        rng = np.random.default_rng()
-        random_point = rng.poisson(upper_bound*encode_range-1) 
-        while random_point > encode_range: random_point = rng.poisson(upper_bound*encode_range-1)  
+
+        # # Using poisson random generation
+        # random_point = rng.poisson(upper_bound*encode_range-1) 
+        # while random_point > encode_range or random_point <= 0: 
+        #     random_point = rng.poisson(upper_bound*encode_range-1)
+
+        # Using binomial random generation 
+        random_point = rng.binomial(encode_range-1, upper_bound)
         
         # Calculate the index based on the random point
-        selected_index = int(i * redundancy + random_point - 1)
+        selected_index = max(0, int(i * redundancy + random_point + 1))
         selection_indexes.append(selected_index)
 
     return selection_indexes

@@ -1,9 +1,7 @@
 from core import *
 from distributions import *
-
-WINDOWSIZE = 300
-min_degree = 5
-max_degree = 5
+from numpy.random import Generator
+from collections import deque
 
 def get_degrees_from(distribution_name, N, k):
     """ Returns the random degrees from a given distribution of probabilities.
@@ -40,7 +38,7 @@ def encode(blocks, redundancy, codetype):
     drops_quantity = int(blocks_n * redundancy)
     assert blocks_n <= drops_quantity, "Because of the unicity in the random neighbors, it is need to drop at least the same amount of blocks"
 
-    print(f"WINDOWSIZE = {WINDOWSIZE}")
+    print(f"WINDOWSIZE = {config['WINDOWSIZE']}")
     print("Generating graph...")
     start_time = time.time()
 
@@ -63,47 +61,113 @@ def encode(blocks, redundancy, codetype):
             # Create symbol, then log the process
             symbol = Symbol(index=i, degree=deg, data=drop, neighbors=selection_indexes)
             
-            if VERBOSE:
+            if config["VERBOSE"]:
                 symbol.log(blocks_n)
 
             log("Encoding", i, drops_quantity, start_time)
 
             yield symbol
+
     elif codetype == "PLOW":
 
-        # preparation before start encoding
-        encode_range = int(WINDOWSIZE*redundancy)
-        symbols = [Symbol(index=i) for i in range(WINDOWSIZE)]
+        # Preparation before start encoding
+        encode_range = int(config["WINDOWSIZE"] * redundancy)
+        symbols = [Symbol(index=i) for i in range(config["WINDOWSIZE"])]
+        # symbols = deque(); symbols.append(Symbol(index=0))
+        sent_symbol_count = 0
 
         for i in range(blocks_n):
 
-            deg = random.randint(min_degree, max_degree) # some symbols will be empty
-            # selection_indexes = [i*redundancy] + [i*redundancy + int(encode_range*(k-1)/k)-1 for k in range(2,deg+1)]
-            selection_indexes = generate_indexes_plow(i, redundancy, encode_range, deg)
-            print(len(symbols), selection_indexes)
+            deg = random.randint(min_degree, max_degree) # same degree for current setting
+            
+            # Option1: Determinist selection of indexes
+            # selection_indexes = [int(i*redundancy)] + [int(i*redundancy + encode_range*(k-1)/k)-1 for k in range(2,deg+1)]
+            # Option2: Random generation
+            selection_indexes = generate_indexes_plow(i, redundancy, deg)
 
-            # Xor the input block to each selected encoded symbol
+            if config["VERBOSE"]: print(i, selection_indexes)
+
+            # XOR the input block to each selected encoded symbol
             for idx in selection_indexes:
                 
                 while idx >= len(symbols): 
-                    symbol = Symbol(index=len(symbols)+1)
+                    symbol = Symbol(index=len(symbols))
                     symbols.append(symbol)
+                # while idx > symbols[-1].index: 
+                #     symbol = Symbol(index=symbols[-1].index+1)
+                #     symbols.append(symbol)
 
+                # Update data for selected encoded symbol
+                # idx = (idx - sent_symbol_count) % encode_range
+                if symbols[idx].degree == 0: symbols[idx].data = blocks[i]
+                else: symbols[idx].data = np.bitwise_xor(symbols[idx].data, blocks[i])
+
+                # Update symbol attributes
+                if i in symbols[idx].neighbors: # collision
+                    symbols[idx].degree -= 1
+                    symbols[idx].neighbors.remove(i)
+                else:
+                    symbols[idx].degree += 1
+                    symbols[idx].neighbors.add(i)
+                assert(symbols[idx].degree == len(symbols[idx].neighbors))
+
+            # print(len(symbols), sent_symbol_count)
+            # FIXME: Remove the symbols in the front and send to decoder
+            # while len(symbols) > encode_range:
+            #     symbol = symbols.popleft()
+            #     sent_symbol_count += 1
+            #     yield symbol
+            
+            log("Encoding", i, blocks_n, start_time)
+        
+        # TODO: inserting 1-degree symbols periodicly: low efficiency for now
+        # upper_bound = int(blocks_n * redundancy)
+        # insert_counter = 0  # Track iterations for periodic insertion
+        # insert_point = interval = 1000
+        # rng = np.random.default_rng()
+        # while i < insert_point and insert_counter > 0:
+        #     insert_point = rng.poisson(interval*insert_counter) 
+        #     while insert_point > upper_bound: insert_point = rng.poisson(interval)  
+        
+        #     batch_size = int((redundancy - 1)*insert_point)
+        
+        #     for id in range(batch_size):
+        #         symbol = Symbol(index=len(symbols), data=blocks[insert_point+id])
+        #         symbols.append(symbol)
+
+        #     if config["VERBOSE"]:
+        #         print(f"Inserted {batch_size} degree-1 symbols")
+            
+        # insert_counter += 1 
+            
+        for symbol in symbols: yield symbol
+
+    elif codetype == "WALZER":
+        deg = 3 # Hardcode for now
+        encode_range = int(config["WINDOWSIZE"]*redundancy)
+        symbols = []
+        
+        for i in range(blocks_n):
+            
+            selection_indexes, _ = generate_indexes(i, deg-1, int(i*redundancy), encode_range)
+            selection_indexes.append(math.ceil(i * redundancy)) # add 1st determinist connection
+
+            for idx in selection_indexes:
+                
+                while idx >= len(symbols): 
+                    symbol = Symbol(index=len(symbols))
+                    symbols.append(symbol)
+                
+                # Update data for selected encoded symbol
                 if symbols[idx].degree == 0: symbols[idx].data = blocks[i]
                 else: symbols[idx].data = np.bitwise_xor(symbols[idx].data, blocks[i])
 
                 # Update symbol attributes
                 symbols[idx].degree += 1
                 symbols[idx].neighbors.add(i)
-
-            # Create a new symbol to the end of symbol list
-            # symbols.append(Symbol(index=len(symbols)+1))
-
-            # if not i % 3000:
-            #     symbols = [Symbol(index=len(symbols)+1, data=blocks[i]) for i in range(WINDOWSIZE)]
             
             log("Encoding", i, blocks_n, start_time)
-        
+
         for symbol in symbols: yield symbol
 
     print("\n----- Correctly dropped {} symbols (packet size={})".format(drops_quantity, PACKET_SIZE))
