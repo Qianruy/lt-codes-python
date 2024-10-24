@@ -4,6 +4,7 @@ from abc import *
 from dataclasses import dataclass
 from typing import *
 from tools import *
+from symbol import *
 from collections import *
 
 # for alignement, index=0 corresponds to no input. 

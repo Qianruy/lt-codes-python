@@ -4,6 +4,7 @@ from abc import *
 from dataclasses import dataclass
 from typing import *
 from tools import *
+from symbol import *
 from distributions import *
 import numpy as np
 from numpy.random import Generator
@@ -112,13 +113,6 @@ class PlowEncoder(Encoder):
 
     def get_one(self) -> Codeword:
         pass
-
-# if __name__ == '__main__':
-#     encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
-#     encoder.put_one(np.zeros(1024, dtype=np.uint8))
-#     encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
-#     print(encoder.get_bat(7))
-#     print(encoder.get_one())
 
 def get_degrees_from(distribution_name, N, k):
     """ Returns the random degrees from a given distribution of probabilities.

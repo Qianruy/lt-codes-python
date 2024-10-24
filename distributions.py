@@ -1,4 +1,5 @@
 from tools import *
+from symbol import *
 
 def ideal_distribution(N):
     """ Create the ideal soliton distribution. 
