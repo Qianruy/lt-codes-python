@@ -17,16 +17,30 @@ from typing import *
 # actual packet indices start from 1. 
 
 @dataclass
-class CodewordBatch:
-    index : np.ndarray
-    data  : np.ndarray
-    degree: np.ndarray
-
-@dataclass
 class Codeword:
     index : np.ndarray 
     data  : np.ndarray
     degree: int
+
+@dataclass
+class CodewordBatch:
+    index : np.ndarray
+    data  : np.ndarray
+    degree: np.ndarray
+    def add(self, code: Codeword):
+        self.index.resize((self.index.shape[0] + 1, self.index.shape[1]))
+        self.index[-1] = code.index
+        self.data.resize((self.data.shape[0] + 1, self.data.shape[1]))
+        self.data[-1] = code.data
+        self.degree.resize((self.degree.shape[0] + 1))
+        self.degree[-1] = code.degree
+    def join(self, code: Self):
+        self.index.resize((self.index.shape[0] + code.index.shape[0], self.index.shape[1]))
+        self.index[-code.index.shape[0]:] = code.index
+        self.data.resize((self.data.shape[0] + code.data.shape[0], self.data.shape[1]))
+        self.data[-code.data.shape[0]:] = code.data
+        self.degree.resize((self.degree.shape[0] + code.degree.shape[0]))
+        self.degree[-code.degree.shape[0]:] = code.degree
 
 class RingBuff:
     def __init__(self, size: int, block: int):

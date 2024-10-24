@@ -41,22 +41,24 @@ class LubyEncoder(Encoder):
     @field(data): all the inputs, array of shape [l]
     @field(prob): cummulative sum of degree distribution probability
     """
-    def __init__(self, dd: np.ndarray, psize: int):
+    def __init__(self, dd: np.ndarray, block: int, seed: int = 42):
         """
         @param(dd): degree distribution array of shape [d]
-        @param(psize): the input code word size
+        @param(block): the input code word size
         """
         super().__init__()
-        self.data = np.zeros((1, psize), dtype=np.uint8)
+        self.data = np.zeros((1, block), dtype=np.uint8)
         self.prob = dd.cumsum(0)
         self.prob[-1] = 1
+        self.rng = np.random.default_rng(seed=seed)
 
     def get_one(self) -> Codeword:
         """
-        @return sample a degree d, and xor d inputs into a codeword
+        @return sample a degree d. then xor d inputs into a codeword
         """
-        degree  = (np.random.random() > self.prob).sum()
-        index   = np.random.randint(1, self.data.shape[0], size=(degree,))
+        degree  = (self.rng.random() > self.prob).sum()
+        index   = self.rng.choice(np.arange(1, self.data.shape[0]), (self.prob.shape[0],), replace=False)
+        index   = (np.arange(1, self.prob.shape[0] + 1) <= degree) * index
         data    = np.bitwise_xor.reduce(self.data[index])
         return Codeword(index, data, degree)
 
@@ -65,9 +67,9 @@ class LubyEncoder(Encoder):
         @param(batch) the size of the batch
         @return sample multiple degrees [..d], for each [..d], xor d inputs into a codeword
         """
-        degree  = (np.random.random(size=(batch, 1)) > self.prob).sum(axis=-1) + 1
-        index   = np.random.randint(1, self.data.shape[0], size=(batch, degree.max(),))
-        index   = (np.arange(1, degree.max() + 1) <= degree.reshape(batch, 1)) * index
+        degree  = (self.rng.random(size=(batch, 1)) > self.prob).sum(axis=-1) + 1
+        index   = self.rng.choice(np.arange(1, self.data.shape[0]), (batch, self.prob.shape[0],), replace=False)
+        index   = (np.arange(1, self.prob.shape[0] + 1) <= degree.reshape(batch, 1)) * index
         data    = np.bitwise_xor.reduce(self.data[index])
         return CodewordBatch(index, data, degree)
 
@@ -92,17 +94,14 @@ class LubyEncoder(Encoder):
 class PlowEncoder(Encoder):
     """
     Plow Encoder for real time streaming
-    @field(ring) the ring buffer for all data packets
-    @field(head) the head pointer for ring buffer
-    @field(tail) the tail pointer for ring buffer
+    @field(ring) the ring buffer for all inputs
     """
     def __init__(self, rsize: int):
         """
         @param(rsize): the maximum size of ring buffer
         """
         self.ring = RingBuff()
-        self.head = 0
-        self.tail = 0
+        self.buff = CodewordBatch()
 
     def put_one(self, data: np.ndarray):
         pass
@@ -110,93 +109,11 @@ class PlowEncoder(Encoder):
     def get_one(self) -> Codeword:
         pass
 
-WINDOWSIZE = 300
-min_degree = 5
-max_degree = 5
-
-def get_degrees_from(distribution_name, N, k):
-    """ Returns the random degrees from a given distribution of probabilities.
-    The degrees distribution must look like a Poisson distribution and the 
-    degree of the first drop is 1 to ensure the start of decoding.
-    """
-
-    if distribution_name == "ideal":
-        probabilities = ideal_distribution(N)
-    elif distribution_name == "robust":
-        probabilities = robust_distribution(N)
-    else:
-        probabilities = None
-    
-    population = list(range(0, N+1))
-    return [1] + choices(population, probabilities, k=k-1)
-   
-def encode(blocks, redundancy, codetype):
-    """ Iterative encoding - Encodes new symbols and yield them.
-    Encoding one symbol is described as follow:
-
-    1.  Randomly choose a degree according to the degree distribution, save it into "deg"
-        Note: below we prefer to randomly choose all the degrees at once for our symbols.
-
-    2.  Choose uniformly at random 'deg' distinct input blocs. 
-        These blocs are also called "neighbors" in graph theory.
-    
-    3.  Compute the output symbol as the combination of the neighbors.
-        In other means, we XOR the chosen blocs to produce the symbol.
-    """
-
-    # Display statistics
-    blocks_n = len(blocks)
-    drops_quantity = int(blocks_n * redundancy)
-    assert blocks_n <= drops_quantity, "Because of the unicity in the random neighbors, it is need to drop at least the same amount of blocks"
-
-    print(f"WINDOWSIZE = {WINDOWSIZE}")
-    print("Generating graph...")
-    start_time = time.time()
-
-    print("Ready for encoding.", flush=True)
-
-    if codetype == "PLOW":
-
-        # preparation before start encoding
-        encode_range = int(WINDOWSIZE*redundancy)
-        symbols = [Symbol(index=i) for i in range(WINDOWSIZE)]
-
-        for i in range(blocks_n):
-
-            deg = random.randint(min_degree, max_degree) # some symbols will be empty
-            # selection_indexes = [i*redundancy] + [i*redundancy + int(encode_range*(k-1)/k)-1 for k in range(2,deg+1)]
-            selection_indexes = generate_indexes_plow(i, redundancy, encode_range, deg)
-            print(len(symbols), selection_indexes)
-
-            # Xor the input block to each selected encoded symbol
-            for idx in selection_indexes:
-                
-                while idx >= len(symbols): 
-                    symbol = Symbol(index=len(symbols)+1)
-                    symbols.append(symbol)
-
-                if symbols[idx].degree == 0: symbols[idx].data = blocks[i]
-                else: symbols[idx].data = np.bitwise_xor(symbols[idx].data, blocks[i])
-
-                # Update symbol attributes
-                symbols[idx].degree += 1
-                symbols[idx].neighbors.add(i)
-
-            # Create a new symbol to the end of symbol list
-            # symbols.append(Symbol(index=len(symbols)+1))
-
-            # if not i % 3000:
-            #     symbols = [Symbol(index=len(symbols)+1, data=blocks[i]) for i in range(WINDOWSIZE)]
-            
-            log("Encoding", i, blocks_n, start_time)
-        
-        for symbol in symbols: yield symbol
-
-    print("\n----- Correctly dropped {} symbols (packet size={})".format(drops_quantity, PACKET_SIZE))
-
 if __name__ == '__main__':
-    encoder = LubyEncoder(np.array([0.5, 0.5]), 1024)
+    encoder = LubyEncoder(np.array([0.5, 0.25, 0.25]), 1024)
     encoder.put_one(np.zeros(1024, dtype=np.uint8))
     encoder.put_bat(np.ones((100, 1024), dtype=np.uint8))
     print(encoder.get_bat(7))
+    print(encoder.get_one())
+    print(encoder.get_one())
     print(encoder.get_one())
