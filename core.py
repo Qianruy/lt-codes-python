@@ -10,7 +10,8 @@ from numpy.random import Generator
 config = {
     "SYSTEMATIC": False,
     "VERBOSE": False,
-    "WINDOWSIZE": 700,
+    "MAX_DEGREE": 5,
+    "WINDOWSIZE": 500,
     "LOSS_PROBABILITY": 0.01
 }
 
@@ -27,8 +28,6 @@ NUMPY_TYPE = np.uint64
 # NUMPY_TYPE = np.uint16
 # NUMPY_TYPE = np.uint8
 EPSILON = 0.0001
-min_degree = 5
-max_degree = 5
 
 class Symbol:
     __slots__ = ["index", "degree", "data", "neighbors"] # fixing attributes may reduce memory usage

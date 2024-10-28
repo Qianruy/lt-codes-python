@@ -57,7 +57,7 @@ def decode_incremental(symbols, recovered_blocks, solved_blocks_count, redundanc
         updated recovered_blocks and recovered_n.
     """
     symbols_n = len(symbols)
-    print(f"\nsymbol index: {symbols_n-1}")
+    if config["VERBOSE"]: print(f"\nsymbol index: {symbols_n-1}")
     assert symbols_n > 0, "There are no symbols to decode."
 
     iteration_solved_count = 0
@@ -100,13 +100,14 @@ def decode_incremental(symbols, recovered_blocks, solved_blocks_count, redundanc
 
                 recovered_blocks[block_index] = symbol.data
                 
-                print("Solved block_{} with symbol_{}".format(block_index, symbol.index))
-                print("Delayed Timeframe: {}".format(symbols[-1].index-block_index))
+                if config["VERBOSE"]:
+                    print("Solved block_{} with symbol_{}".format(block_index, symbol.index))
+                    print("Delayed Timeframe: {}".format(symbols[-1].index-block_index))
                 total_delay += symbols[-1].index-block_index
 
                 # Update the count and log the processing
                 solved_blocks_count += 1
-                log("Decoding", solved_blocks_count, blocks_n, start_time)
+                # log("Decoding", solved_blocks_count, blocks_n, start_time)
         
                 # Reduce the degrees of other symbols that contains the solved block as neighbor
                 reduce_neighbors(block_index, recovered_blocks, symbols, redundancy, code_type) 

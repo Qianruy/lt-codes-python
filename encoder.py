@@ -77,7 +77,7 @@ def encode(blocks, redundancy, codetype):
         sent_symbol_count = 0
 
         for i in range(blocks_n):
-
+            min_degree = max_degree = config["MAX_DEGREE"]
             deg = random.randint(min_degree, max_degree) # same degree for current setting
             
             # Option1: Determinist selection of indexes
@@ -85,7 +85,7 @@ def encode(blocks, redundancy, codetype):
             # Option2: Random generation
             selection_indexes = generate_indexes_plow(i, redundancy, deg)
 
-            if config["VERBOSE"]: print(i, selection_indexes)
+            # if config["VERBOSE"]: print(i, selection_indexes)
 
             # XOR the input block to each selected encoded symbol
             for idx in selection_indexes:
@@ -143,13 +143,13 @@ def encode(blocks, redundancy, codetype):
         for symbol in symbols: yield symbol
 
     elif codetype == "WALZER":
-        deg = 3 # Hardcode for now
+        deg = config["MAX_DEGREE"]
         encode_range = int(config["WINDOWSIZE"]*redundancy)
         symbols = []
         
         for i in range(blocks_n):
             
-            selection_indexes, _ = generate_indexes(i, deg-1, int(i*redundancy), encode_range)
+            selection_indexes, _ = generate_indexes(i, deg-1, int(i*redundancy)+1, encode_range-1)
             selection_indexes.append(math.ceil(i * redundancy)) # add 1st determinist connection
 
             for idx in selection_indexes:
@@ -163,8 +163,13 @@ def encode(blocks, redundancy, codetype):
                 else: symbols[idx].data = np.bitwise_xor(symbols[idx].data, blocks[i])
 
                 # Update symbol attributes
-                symbols[idx].degree += 1
-                symbols[idx].neighbors.add(i)
+                if i in symbols[idx].neighbors: # collision
+                    symbols[idx].degree -= 1
+                    symbols[idx].neighbors.remove(i)
+                else:
+                    symbols[idx].degree += 1
+                    symbols[idx].neighbors.add(i)
+                assert(symbols[idx].degree == len(symbols[idx].neighbors))
             
             log("Encoding", i, blocks_n, start_time)
 

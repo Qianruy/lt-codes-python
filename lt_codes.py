@@ -70,17 +70,25 @@ if __name__ == "__main__":
     parser.add_argument("--verbose", help="increase output verbosity", action="store_true")
     parser.add_argument("--x86", help="avoid using np.uint64 for x86-32bits systems", action="store_true")
     parser.add_argument("-t", "--codetype", help="select wanted code type.", default="LT")
+    parser.add_argument("-w", "--windowsize", help="set appropriate range for encoding.", default=500, type=int)
+    parser.add_argument("-k", "--numofdegree", help="set number of encoded symbols connected to single input symbol", default=3, type=int)
+    parser.add_argument("-l", "--lossrate", help="loss probability for encoded symbols", default=0.01, type=float)
     args = parser.parse_args()
 
     core.NUMPY_TYPE = np.uint32 if args.x86 else core.NUMPY_TYPE
     core.config["SYSTEMATIC"] = True if args.systematic else core.config["SYSTEMATIC"]
     core.config["VERBOSE"] = True if args.verbose else core.config["VERBOSE"]    
+    core.config["WINDOWSIZE"] = args.windowsize 
+    core.config["LOSS_PROBABILITY"] = args.lossrate  
+    core.config["MAX_DEGREE"] = args.numofdegree 
 
     with open(args.filename, "rb") as file:
 
         print("Redundancy: {}".format(args.redundancy))
         print("Code Type: {}".format(args.codetype))
-        print("Systematic: {}".format(core.config["SYSTEMATIC"]))
+        # print("Systematic: {}".format(core.config["SYSTEMATIC"]))
+        print("Loss Rate: {}".format(core.config["LOSS_PROBABILITY"]))
+        print("Max Degree: {}".format(core.config["MAX_DEGREE"]))
 
         filesize = os.path.getsize(args.filename)
         print("Filesize: {} bytes".format(filesize))
@@ -101,7 +109,7 @@ if __name__ == "__main__":
             if random.random() >= core.config["LOSS_PROBABILITY"]: # Simulating the loss of packets
                 file_symbols.append(curr_symbol)
 
-            if args.codetype in ["PLOW", "WALZER"] :
+            if args.codetype in ["PLOW", "WALZER"]:
                 recovered_n, curr_delay = decode_incremental(file_symbols, recovered_blocks, recovered_n, 
                                                                                args.redundancy, args.codetype)
                 total_delay += curr_delay
