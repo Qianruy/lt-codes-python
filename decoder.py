@@ -97,7 +97,7 @@ class LubyDecoder(Decoder):
                     self.buff.degree[i] -= links.sum()
                     remove = np.bitwise_xor.reduce(self.data[index * links.sum(-2)], axis=0)
                     self.buff.data[i] = np.bitwise_xor(self.buff.data[i], remove)
-            Parallel(n_jobs=8, require='sharedmem')(fill(i) for i in range(self.buff.data.shape[0]))
+            Parallel(n_jobs=4, require='sharedmem')(fill(i) for i in range(self.buff.data.shape[0]))
         if not np.all(self.collected):
             print(np.arange(self.collected.shape[0])[~self.collected])
             return None

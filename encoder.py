@@ -73,9 +73,9 @@ class LubyEncoder(Encoder):
         seed = self.rng.random(size=batch)
         @delayed
         def fill(b):
-            rng = np.random.default_rng(b + 42 + int(10 * seed[b]))
+            rng = np.random.default_rng(int(10000 * seed[b]))
             index[b] = rng.choice(np.arange(1, self.data.shape[0]), (self.prob.shape[0],), replace=False)
-        Parallel(n_jobs=8, require='sharedmem')(fill(b) for b in range(batch))
+        Parallel(n_jobs=4, require='sharedmem')(fill(b) for b in range(batch))
         index   = (np.arange(1, self.prob.shape[0] + 1) <= degree.reshape(-1, 1)) * index
         print(index)
         data    = np.bitwise_xor.reduce(self.data[index], axis=1)
