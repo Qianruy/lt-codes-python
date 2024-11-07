@@ -1,5 +1,6 @@
 from core import *
 from distributions import *
+import numpy as np
 from numpy.random import Generator
 from collections import deque
 
@@ -149,11 +150,23 @@ def encode(blocks, redundancy, codetype):
         
         for i in range(blocks_n):
             
-            selection_indexes, _ = generate_indexes(i, deg-1, int(i*redundancy)+1, encode_range-1)
-            selection_indexes.append(math.ceil(i * redundancy)) # add 1st determinist connection
+            end_index = int(i*redundancy) + encode_range
+            selection_indexes, _ = generate_indexes(i, deg, 0, encode_range)
+            selection_indexes.sort()
 
-            for idx in selection_indexes:
+            # Stretch the randomly and uniformly selected indexes to 
+            # make the last index equal to the encode range
+            scaling =  encode_range / selection_indexes[-1]
+            selection_indexes = np.array(selection_indexes)
+            selection_indexes_stretched = (end_index - (selection_indexes * scaling)).tolist()
+            selection_indexes_stretched.pop()
+            selection_indexes_stretched.append(math.ceil(i * redundancy)) # add 1st determinist connection
+
+            if config["VERBOSE"]: print(i, [int(x) for x in selection_indexes_stretched])
+
+            for idx in selection_indexes_stretched[:-1] + [int(i*redundancy)]:
                 
+                idx = int(idx)
                 while idx >= len(symbols): 
                     symbol = Symbol(index=len(symbols))
                     symbols.append(symbol)
