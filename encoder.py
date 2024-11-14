@@ -83,6 +83,13 @@ def encode(blocks, redundancy, codetype):
             
             # Option1: Determinist selection of indexes
             # selection_indexes = [int(i*redundancy)] + [int(i*redundancy + encode_range*(k-1)/k)-1 for k in range(2,deg+1)]
+            
+            # NEW: select deg from [k1, k2]
+            # if random.random() >= 0.86752: deg = 12 # avg_deg = 4.08
+            # if random.random() >= 0.88743: deg = 21 # avg_deg = 5.03
+            # deg = 12 if random.random() >= 0.87 else 4  # avg_deg = 5.04
+            # deg = 21 if random.random() >= 0.88235 else 4  # avg_deg = 6
+            
             # Option2: Random generation
             selection_indexes = generate_indexes_plow(i, redundancy, deg)
 

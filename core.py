@@ -78,14 +78,22 @@ def generate_indexes_plow(i, redundancy, deg):
     """
     encode_range = int(config["WINDOWSIZE"] * redundancy)
     selection_indexes = [math.ceil(i * redundancy)]  # Add the first index
+    # selection_indexes = []  # For rank calculation, delete later
     
     alpha = 1
-    # TODO: pre-determined seeds
-    rng = np.random.default_rng()
-    for k in range(2, deg + 1):
+    # TODO: pre-determined seeds, using symbol index for now
+    rng = np.random.default_rng(i)
+    for k in range(2, deg + 1): # For rank calculation, modify later
         # Generate a random value between (1 - 1/(k-1)) and (1 - 1/k)
         # lower_bound = 1 - 1/(k-1)*alpha
-        upper_bound = 1 - 1/k*alpha
+        # upper_bound = 1 - 1/k*alpha
+
+        base = math.exp(1) - 1
+        upper_bound = 1 - 1/pow(base,k-1)
+
+        # # Gaussian noise for randomrization
+        # noise = rng.normal(1 - 1/pow(base, k-1), 1/pow(base, k+1))
+        # random_point = (upper_bound + noise) * encode_range 
 
         # # Using poisson random generation
         # random_point = rng.poisson(upper_bound*encode_range-1) 
