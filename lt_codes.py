@@ -4,9 +4,10 @@
 import os
 import math
 import argparse
-import numpy as np
 import random
 import core
+import stats
+from experiments.rank import *
 from encoder import encode
 from decoder import decode, decode_incremental
 
@@ -82,6 +83,9 @@ if __name__ == "__main__":
     core.config["LOSS_PROBABILITY"] = args.lossrate  
     core.config["MAX_DEGREE"] = args.numofdegree 
 
+    # Initialize stats
+    results_stats = stats.Stats(args)
+
     with open(args.filename, "rb") as file:
 
         print("Redundancy: {}".format(args.redundancy))
@@ -105,7 +109,18 @@ if __name__ == "__main__":
         file_symbols = []
         recovered_blocks, recovered_n = [None] * file_blocks_n, 0
         total_delay = 0
-        for curr_symbol in encode(file_blocks, args.redundancy, args.codetype):
+
+        for i, curr_symbol in enumerate(encode(file_blocks, args.redundancy, args.codetype)):
+
+            # # Calculate current rank
+            # encode_range = int(core.config["WINDOWSIZE"]*args.redundancy)
+            # if i == 0: A = sp.csr_matrix(([1]), dtype=int)
+            # else: 
+            #     A = add_encoded_symbol(A, curr_symbol, 2*encode_range)
+            #     A = expand_and_trim(A, 2*encode_range)
+            #     rank = sparse_matrix_rank(A)
+            #     print("current rank: {}".format(rank))
+
             if random.random() >= core.config["LOSS_PROBABILITY"]: # Simulating the loss of packets
                 file_symbols.append(curr_symbol)
 
@@ -125,6 +140,12 @@ if __name__ == "__main__":
 
         print("\n----- Solved Blocks {:2}/{:2} ---".format(recovered_n, file_blocks_n))
         print(f"----- Avg Delayed Timeframe: {total_delay/recovered_n} ---")
+
+        # Record results
+        results_stats.add_result("solved percentage", round(recovered_n/file_blocks_n, 3))
+        if file_blocks_n * 0.8 <= recovered_n:
+            results_stats.add_result("success", True)
+
         if recovered_n != file_blocks_n:
             print("Blocks are not all recovered, we cannot proceed the file writing")
             exit()
@@ -139,6 +160,7 @@ if __name__ == "__main__":
         with open(filename_copy, "wb") as file_copy:
             blocks_write(recovered_blocks, file_copy, filesize)
 
+        results_stats.save_to_json("./results/summary/out_w{}_{}.json".format(args.windowsize, results_stats.data["timestamp"]))
         print("Wrote {} bytes in {}".format(os.path.getsize(filename_copy), filename_copy))
 
 
