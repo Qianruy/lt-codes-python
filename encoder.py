@@ -6,13 +6,10 @@ from typing import *
 from tools import *
 from symbol import *
 from distributions import *
-<<<<<<< HEAD
 import numpy as np
 from numpy.random import Generator
 from collections import deque
-=======
 from joblib import *
->>>>>>> 6274519 (Update: parallel decoding and encoding.)
 
 class Encoder(ABC):
     @abstractmethod
@@ -124,7 +121,6 @@ class PlowEncoder(Encoder):
     def get_one(self) -> Codeword:
         pass
 
-<<<<<<< HEAD
 def get_degrees_from(distribution_name, N, k):
     """ Returns the random degrees from a given distribution of probabilities.
     The degrees distribution must look like a Poisson distribution and the 
@@ -311,8 +307,6 @@ def encode(blocks, redundancy, codetype):
 
     print("\n----- Correctly dropped {} symbols (packet size={})".format(drops_quantity, PACKET_SIZE))
 
-=======
->>>>>>> 331eb81 (Update: add seed to random generator.)
 if __name__ == '__main__':
     encoder = LubyEncoder(np.array([0.5, 0.25, 0.25]), 1024)
     encoder.put_one(np.zeros(1024, dtype=np.uint8))

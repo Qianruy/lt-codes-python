@@ -122,8 +122,6 @@ class PlowDecoder(Decoder):
     
     def get_all(self) -> Optional[bytes]: 
         pass
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 def recover_graph(symbols, blocks_quantity):
     """ Get back the same random indexes (or neighbors), thanks to the symbol id as seed.
@@ -332,8 +330,3 @@ def decode(symbols, blocks_quantity, code_type):
         print(f"{cnt} symbols with degree {deg}")
 
     return np.asarray(blocks), solved_blocks_count
-=======
->>>>>>> 331eb81 (Update: add seed to random generator.)
-=======
-
->>>>>>> 6274519 (Update: parallel decoding and encoding.)
