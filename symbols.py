@@ -6,22 +6,7 @@ import numpy as np
 import random
 from random import choices
 from numpy.random import Generator
-
-SYSTEMATIC = False
-VERBOSE = False
-# PACKET_SIZE = 65536
-# PACKET_SIZE = 32768
-# PACKET_SIZE = 16384
-# PACKET_SIZE = 4096
-# PACKET_SIZE = 1024
-# PACKET_SIZE = 512
-PACKET_SIZE = 128
-ROBUST_FAILURE_PROBABILITY = 0.01
-NUMPY_TYPE = np.uint64
-# NUMPY_TYPE = np.uint32
-# NUMPY_TYPE = np.uint16
-# NUMPY_TYPE = np.uint8
-EPSILON = 0.0001
+from tools import *
 
 class Symbol:
     __slots__ = ["index", "degree", "data", "neighbors"] # fixing attributes may reduce memory usage
@@ -105,8 +90,8 @@ def log(process, iteration, total, start_time):
     if time.time() - log_actual_time > 1 or iteration == total - 1:
         
         log_actual_time = time.time()
-        elapsed = log_actual_time - start_time + EPSILON
-        speed = (iteration + 1) / elapsed * PACKET_SIZE / (1024 * 1024)
+        elapsed = log_actual_time - start_time + config["EPSILON"]
+        speed = (iteration + 1) / elapsed * config["PACKET_SIZE"] / (1024 * 1024)
 
         print("-- {}: {}/{} - {:.2%} symbols at {:.2f} MB/s       ~{:.2f}s".format(
             process, iteration + 1, total, (iteration + 1) / total, speed, elapsed), end="\r", flush=True)

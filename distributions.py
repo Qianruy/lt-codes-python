@@ -1,5 +1,8 @@
 from tools import *
-from symbol import *
+from symbols import *
+
+EPSILON = config["EPSILON"]
+ROBUST_FAILURE_PROBABILITY = config["ROBUST_FAILURE_PROBABILITY"]
 
 def ideal_distribution(N):
     """ Create the ideal soliton distribution. 
@@ -35,3 +38,7 @@ def robust_distribution(N):
 
     assert probabilities_sum >= 1 - EPSILON and probabilities_sum <= 1 + EPSILON, "The robust distribution should be standardized"
     return probabilities
+
+if __name__ == '__main__':
+    print(ideal_distribution(10))
+    print(robust_distribution(10))
