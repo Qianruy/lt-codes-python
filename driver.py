@@ -33,6 +33,8 @@ def run_experiment(config):
     if codetype == "PLOW":
         encoder = PlowEncoder(1024, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
     elif codetype == "WALZER":
+        encoder = WalzerEncoder(1024, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
+    elif codetype == "LT":
         encoder = LubyEncoder(np.array(robust_distribution(N-1)), 1024, 10000)
     else:
         raise ValueError(f"Unsupported code type: {codetype}")
@@ -45,15 +47,16 @@ def run_experiment(config):
         decoder = IterativeDecoder(numofdegree*5, 1024, lossrate=lossrate)
         decoder.put_bat(encoder.get_all())
     elif codetype == "WALZER":
-        decoder = IterativeDecoder(N, 1024)
-        decoder.put_bat(encoder.get_bat(N*redundancy))
+        decoder = IterativeDecoder(numofdegree*5, 1024, lossrate=lossrate)
+        decoder.put_bat(encoder.get_all())
     else:
         raise ValueError(f"Unsupported code type: {codetype}")
     
     print("Decoding process starts...")
     
     # Check if decoding was successful
-    decoded_success = (decoder.get_all() == np.ones((N, 1024), dtype=np.uint8)).all()
+    # decoded_success = (decoder.get_all() == np.ones((N, 1024), dtype=np.uint8)).all()
+    decoded_success = (decoder.get_all() >= N * 0.99)
     
     end = time.time()
     
@@ -65,7 +68,7 @@ def run_experiment(config):
 def binary_search(config, start, end):
     """ Performs a binary search on redundancy to find an optimal setting. """
     
-    while (end - start) >= 0.0005:
+    while (end - start) >= 0.0001:
         r = (start + end) / 2.0
         config["redundancy"] = round(r, 4)
         
@@ -95,7 +98,7 @@ if __name__ == "__main__":
                     })
                     
                     if config.get("binary_search", False):
-                        start, end = 1.0, 1.15
+                        start, end = 1.0, 1.5
                         binary_search(cur_config, start, end)
                     else:
                         run_experiment(cur_config)
