@@ -27,6 +27,8 @@ def robust_distribution(N):
     # We take the median and add +1 to avoid possible division by zero 
     M = N // 2 + 1 
     R = N / M
+    c = R / math.log(N / ROBUST_FAILURE_PROBABILITY) / math.sqrt(N)
+    print(f"parameter c = {c}")
 
     extra_proba = [0] + [1 / (i * M) for i in range(1, M)]
     extra_proba += [math.log(R / ROBUST_FAILURE_PROBABILITY) / M]  # Spike at M

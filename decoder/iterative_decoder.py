@@ -1,5 +1,7 @@
 from .base_decoder import *
 from numba import njit
+from logging import *
+
 class IterativeDecoder(Decoder):
     """
     Luby Transform Decoder
@@ -37,9 +39,10 @@ class IterativeDecoder(Decoder):
     def get_one(self) -> Optional[bytes]: 
         raise NotImplementedError("Only support full decoding")
     
-    
-    def get_all(self) -> Optional[bytes]:
+    def get_all(self) -> Optional[int]:
+        round = 0
         while True:
+            round += 1
             ripple = self.buff.degree == 1
             # loop runs until no codewords of degree 1 are left 
             if np.all(~ripple): break
@@ -50,6 +53,9 @@ class IterativeDecoder(Decoder):
 
             # remove existing index from codewords
             index = np.unique(index)
+            # log index of decoded symbols for each round
+            # log.log_decoded_symbols(round, index)
+
             print("ripple size: {}".format(np.count_nonzero(index)))
             index = index * ~self.collected[index]
             self.collected[index] = True
@@ -99,6 +105,7 @@ class IterativeDecoder(Decoder):
             # print unsolved indices of source symbols
             print(np.count_nonzero(self.collected))
             print(np.arange(self.collected.shape[0])[~self.collected])
-            return None
+            return np.count_nonzero(self.collected)
         else:
-            return self.data[1:]
+            return np.count_nonzero(self.collected)
+            # return self.data[1:]

@@ -39,10 +39,10 @@ class WalzerEncoder(Encoder):
 
             # Mode 1: original uniform dist, mode 2: add a determinist 1st edge
             if self.mode == 1:
+                selected = rng.choice(encode_range, size=self.maxdegree, replace=False)
+            elif self.mode == 2:
                 selected = rng.choice(encode_range, size=self.maxdegree-1, replace=False)
                 selected = list(selected)+[0]
-            elif self.mode == 2:
-                elected = rng.choice(encode_range, size=self.maxdegree, replace=False)
             selected.sort()
 
             # Mode 3: Stretch the randomly and uniformly selected indexes to 
