@@ -19,17 +19,18 @@ class SlidingFountainEncoder(LubyEncoder):
         def fill(b):
             rng = np.random.default_rng(int(10000 * seeds[b]))
             # print(self.data.shape[0], self.prob.shape[0])
-            indices[b] = rng.choice(np.arange(self.start+1, self.start+self.data.shape[0]), (self.prob.shape[0],), replace=False)
+            indices[b] = rng.choice(np.arange(self.start+1, self.start+self.wdn_size+1), (self.prob.shape[0],), replace=False)
         Parallel(n_jobs=4, require='sharedmem')(fill(b) for b in range(batch))
-        indices = (np.arange(1, self.prob.shape[0] + 1) <= degrees.reshape(-1, 1)) * indices
-        print(indices[:2])
-        data = np.bitwise_xor.reduce(self.data[indices-self.start], axis=1)
+        indices = (np.arange(1, self.wdn_size+1) <= degrees.reshape(-1, 1)) * indices
+        # Dealing with indices because some symbols are removed after shifting
+        selected_indices = np.where(indices > self.start, indices-self.start, indices)
+        data = np.bitwise_xor.reduce(self.data[selected_indices], axis=1)
         return CodewordBatch(indices, data, degrees)
 
 
     def shift_window(self):
         self.start += int((1- self.overlap) * self.wdn_size)
-        print(self.start)
+        # print("start: {}".format(self.start))
 
     def remove_one(self):
         """
@@ -42,5 +43,5 @@ class SlidingFountainEncoder(LubyEncoder):
         remove batch sources from encoder
         """
         assert(batch <= self.data.shape[0])
-        self.data = self.data[batch:]
+        self.data = np.concatenate([self.data[0:1], self.data[batch+1:]])
     

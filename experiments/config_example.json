@@ -1,0 +1,13 @@
+{
+    "filename": "benchmarks/dummy",
+    "number_of_source": 100000,
+    "systematic": false,
+    "verbose": false,
+    "codetype": ["SF"],
+    "windowsize": [20000],
+    "lossrate":[0],
+    "numofdegree": [3],
+    "overlap": 0.5,
+    "binary_search": false,
+    "redundancy": 1.03
+}
