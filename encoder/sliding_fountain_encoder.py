@@ -24,7 +24,12 @@ class SlidingFountainEncoder(LubyEncoder):
         indices = (np.arange(1, self.wdn_size+1) <= degrees.reshape(-1, 1)) * indices
         # Dealing with indices because some symbols are removed after shifting
         selected_indices = np.where(indices > self.start, indices-self.start, indices)
-        data = np.bitwise_xor.reduce(self.data[selected_indices], axis=1)
+        data = np.zeros((batch, self.data.shape[1]), dtype=np.uint8)
+        for i in range(batch):
+            valid_indices = np.trim_zeros(selected_indices[i])
+            if valid_indices.size > 0:
+                data[i] = np.bitwise_xor.reduce(self.data[valid_indices], axis=0)
+
         return CodewordBatch(indices, data, degrees)
 
 
