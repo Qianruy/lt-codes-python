@@ -40,6 +40,37 @@ class Decoder(ABC):
         """
         pass
 
+@njit(parallel = True, nogil=True)
+def update_buffer(buff_index, buff_degree, buff_data, indices_set, data):
+    """ 
+    Optimized update function using Numba to process buffer modifications. 
+    """
+    num_codewords = buff_data.shape[0]
+    num_source = data.shape[0]
+
+    # Precompute indices as a set for fast lookups
+    indices = set(indices_set)
+
+    for i in prange(num_codewords):  # prange enables parallelism
+        links = np.zeros(buff_index[i].size, dtype=np.bool_)
+        for j in range(buff_index[i].size):
+            if buff_index[i, j] in indices:
+                links[j] = True
+
+        if np.any(links):  
+            buff_index[i] *= ~links  # remove matched indices
+            buff_degree[i] -= np.count_nonzero(links)  # reduce degree
+
+            # Perform XOR reduction (manual for speed)
+            removal = np.zeros(num_source, dtype=np.bool_)
+            for j in prange(1, num_source+1):
+                if j in buff_index[i][links]:
+                    removal[j] = True
+            xor_value = np.uint8(0)
+            for value in data[removal][0]:
+                xor_value ^= value
+            buff_data[i] = xor_value
+
 def recover_graph(symbols, blocks_quantity):
     """ Get back the same random indexes (or neighbors), thanks to the symbol id as seed.
     For an easy implementation purpose, we register the indexes as property of the Symbols objects.

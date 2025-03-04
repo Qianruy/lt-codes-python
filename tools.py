@@ -77,6 +77,11 @@ class CodewordBatch:
 
         print(f"Applied loss: {np.count_nonzero(drop_mask)} codewords dropped out of {len(drop_mask)}")
 
+    def slice(self, start: int, end: int): CodewordBatch:
+        return CodewordBatch(
+            index = 
+        )
+
 class RingBuff:
     def __init__(self, size: int, block: int):
         self.data = np.zeros((size, block), dtype=np.int8)
