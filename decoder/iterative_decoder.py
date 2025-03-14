@@ -1,6 +1,6 @@
 from .base_decoder import *
 from numba import njit, prange
-from logging import *
+from decode_logging import *
 
 class IterativeDecoder(Decoder):
     """
@@ -24,6 +24,7 @@ class IterativeDecoder(Decoder):
         self.collected[0] = True
         self.block = block
         self.lossrate = lossrate
+        self.log = decoderState()
 
     def put_one(self, code: Codeword):
         self.buff.add(code)
@@ -51,10 +52,15 @@ class IterativeDecoder(Decoder):
             index = np.bitwise_or.reduce(self.buff.index[ripple, :], axis=-1)
             self.data[index, :] = self.buff.data[ripple, :]
 
+            # add logs
+            # codeword_ids = np.where(ripple)[0]
+            # for idx, cw_id in zip(index,codeword_ids):
+            #     self.log.log_codeword_degree_removal(idx, cw_id, round)
+
             # remove existing index from codewords
             index = np.unique(index)
             # log index of decoded symbols for each round
-            # log.log_decoded_symbols(round, index)
+            self.log.log_decoded_symbols(round, index)
 
             print("ripple size: {}".format(np.count_nonzero(index)))
             index = index * ~self.collected[index]
@@ -65,6 +71,8 @@ class IterativeDecoder(Decoder):
         num_of_solved = np.count_nonzero(self.collected)
         num_of_source = self.collected.shape[0]
         print(f"Solved symbols: {num_of_solved}/{num_of_source}")
+        # write log to the file
+        # self.log._write_to_json("./experiments/decoding_log.json")
         if not np.all(self.collected):
             print("Blocks are not all recovered, we cannot proceed the file writing.")
             # print unsolved indices of source symbols
