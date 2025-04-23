@@ -1,9 +1,9 @@
 import mpmath as mp        
 
 k = 3          
-delta = 0.0  
+delta = 0.03 
 
-g = lambda lam: k*lam + mp.e**(-lam)*((k-1)*lam + k*(1-delta)) - k
+g = lambda lam: lam + mp.e**(-lam)*((k-1)*lam + k*(1-delta)) - k*(1-delta)
          
 lam = mp.findroot(g, k)   
 print("λ =", lam)
