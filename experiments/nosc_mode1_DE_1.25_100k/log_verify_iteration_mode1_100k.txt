@@ -1,0 +1,1041 @@
+[670488, 116740, 26226, 777573, 288390, 256788, 234054, 146317, 772247, 107474, 709571, 776647, 935519, 571859, 91162, 619177, 442418, 33327, 31245, 98247]
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 670488
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27456
+ripple size: 24782
+codewords with degree 1: 11616
+ripple size: 10915
+codewords with degree 1: 6683
+ripple size: 6416
+codewords with degree 1: 4451
+ripple size: 4320
+codewords with degree 1: 3291
+ripple size: 3210
+codewords with degree 1: 2573
+ripple size: 2530
+codewords with degree 1: 2079
+ripple size: 2034
+codewords with degree 1: 1719
+ripple size: 1692
+codewords with degree 1: 1470
+ripple size: 1450
+codewords with degree 1: 1265
+ripple size: 1254
+codewords with degree 1: 1150
+ripple size: 1133
+codewords with degree 1: 1053
+ripple size: 1041
+codewords with degree 1: 1009
+ripple size: 999
+codewords with degree 1: 924
+ripple size: 919
+codewords with degree 1: 872
+ripple size: 861
+codewords with degree 1: 817
+ripple size: 810
+codewords with degree 1: 806
+ripple size: 800
+codewords with degree 1: 805
+ripple size: 792
+codewords with degree 1: 794
+ripple size: 787
+codewords with degree 1: 808
+ripple size: 802
+Solved symbols: 67548/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[     4      6      7 ...  99997  99998 100000]
+Experiment result: FAILED
+Runtime of the program: 146.5787 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 116740
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 13
+Decoding process starts...
+codewords with degree 1: 27598
+ripple size: 24809
+codewords with degree 1: 11613
+ripple size: 10957
+codewords with degree 1: 6601
+ripple size: 6337
+codewords with degree 1: 4411
+ripple size: 4285
+codewords with degree 1: 3198
+ripple size: 3127
+codewords with degree 1: 2447
+ripple size: 2407
+codewords with degree 1: 2084
+ripple size: 2045
+codewords with degree 1: 1771
+ripple size: 1747
+codewords with degree 1: 1522
+ripple size: 1502
+codewords with degree 1: 1348
+ripple size: 1337
+codewords with degree 1: 1189
+ripple size: 1173
+codewords with degree 1: 1091
+ripple size: 1076
+codewords with degree 1: 1000
+ripple size: 986
+codewords with degree 1: 928
+ripple size: 921
+codewords with degree 1: 894
+ripple size: 888
+codewords with degree 1: 857
+ripple size: 847
+codewords with degree 1: 815
+ripple size: 809
+codewords with degree 1: 863
+ripple size: 855
+codewords with degree 1: 849
+ripple size: 839
+codewords with degree 1: 840
+ripple size: 830
+Solved symbols: 67778/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    2     6     7 ... 99991 99993 99996]
+Experiment result: FAILED
+Runtime of the program: 157.9403 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 26226
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 13
+Decoding process starts...
+codewords with degree 1: 27621
+ripple size: 24942
+codewords with degree 1: 11686
+ripple size: 10952
+codewords with degree 1: 6527
+ripple size: 6288
+codewords with degree 1: 4383
+ripple size: 4244
+codewords with degree 1: 3182
+ripple size: 3112
+codewords with degree 1: 2444
+ripple size: 2383
+codewords with degree 1: 2063
+ripple size: 2020
+codewords with degree 1: 1663
+ripple size: 1634
+codewords with degree 1: 1399
+ripple size: 1383
+codewords with degree 1: 1268
+ripple size: 1253
+codewords with degree 1: 1162
+ripple size: 1144
+codewords with degree 1: 1079
+ripple size: 1067
+codewords with degree 1: 1022
+ripple size: 1009
+codewords with degree 1: 971
+ripple size: 959
+codewords with degree 1: 921
+ripple size: 914
+codewords with degree 1: 876
+ripple size: 860
+codewords with degree 1: 873
+ripple size: 856
+codewords with degree 1: 848
+ripple size: 836
+codewords with degree 1: 786
+ripple size: 777
+codewords with degree 1: 797
+ripple size: 788
+Solved symbols: 67422/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[     2      3     10 ...  99982  99983 100000]
+Experiment result: FAILED
+Runtime of the program: 165.5432 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 777573
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 13
+Decoding process starts...
+codewords with degree 1: 27567
+ripple size: 24831
+codewords with degree 1: 11637
+ripple size: 10973
+codewords with degree 1: 6719
+ripple size: 6458
+codewords with degree 1: 4472
+ripple size: 4326
+codewords with degree 1: 3219
+ripple size: 3128
+codewords with degree 1: 2489
+ripple size: 2427
+codewords with degree 1: 2048
+ripple size: 2017
+codewords with degree 1: 1722
+ripple size: 1694
+codewords with degree 1: 1538
+ripple size: 1503
+codewords with degree 1: 1372
+ripple size: 1350
+codewords with degree 1: 1238
+ripple size: 1220
+codewords with degree 1: 1080
+ripple size: 1061
+codewords with degree 1: 1000
+ripple size: 990
+codewords with degree 1: 912
+ripple size: 904
+codewords with degree 1: 862
+ripple size: 857
+codewords with degree 1: 820
+ripple size: 812
+codewords with degree 1: 820
+ripple size: 814
+codewords with degree 1: 796
+ripple size: 789
+codewords with degree 1: 784
+ripple size: 772
+codewords with degree 1: 800
+ripple size: 788
+Solved symbols: 67715/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    5     6     7 ... 99991 99993 99996]
+Experiment result: FAILED
+Runtime of the program: 239.0773 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 288390
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 15
+Decoding process starts...
+codewords with degree 1: 27605
+ripple size: 24858
+codewords with degree 1: 11688
+ripple size: 10966
+codewords with degree 1: 6686
+ripple size: 6421
+codewords with degree 1: 4519
+ripple size: 4387
+codewords with degree 1: 3346
+ripple size: 3268
+codewords with degree 1: 2586
+ripple size: 2530
+codewords with degree 1: 2063
+ripple size: 2031
+codewords with degree 1: 1768
+ripple size: 1745
+codewords with degree 1: 1535
+ripple size: 1506
+codewords with degree 1: 1344
+ripple size: 1316
+codewords with degree 1: 1177
+ripple size: 1163
+codewords with degree 1: 1100
+ripple size: 1089
+codewords with degree 1: 1008
+ripple size: 995
+codewords with degree 1: 934
+ripple size: 924
+codewords with degree 1: 879
+ripple size: 859
+codewords with degree 1: 815
+ripple size: 804
+codewords with degree 1: 810
+ripple size: 801
+codewords with degree 1: 769
+ripple size: 762
+codewords with degree 1: 760
+ripple size: 754
+codewords with degree 1: 748
+ripple size: 746
+Solved symbols: 67926/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    6     9    14 ... 99987 99988 99994]
+Experiment result: FAILED
+Runtime of the program: 246.9324 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 256788
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27701
+ripple size: 24911
+codewords with degree 1: 11583
+ripple size: 10892
+codewords with degree 1: 6644
+ripple size: 6379
+codewords with degree 1: 4407
+ripple size: 4286
+codewords with degree 1: 3199
+ripple size: 3118
+codewords with degree 1: 2447
+ripple size: 2397
+codewords with degree 1: 2028
+ripple size: 1985
+codewords with degree 1: 1677
+ripple size: 1651
+codewords with degree 1: 1452
+ripple size: 1431
+codewords with degree 1: 1303
+ripple size: 1290
+codewords with degree 1: 1145
+ripple size: 1130
+codewords with degree 1: 1025
+ripple size: 1017
+codewords with degree 1: 924
+ripple size: 918
+codewords with degree 1: 875
+ripple size: 863
+codewords with degree 1: 812
+ripple size: 807
+codewords with degree 1: 771
+ripple size: 759
+codewords with degree 1: 728
+ripple size: 721
+codewords with degree 1: 695
+ripple size: 686
+codewords with degree 1: 655
+ripple size: 649
+codewords with degree 1: 626
+ripple size: 622
+Solved symbols: 66513/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[     1      2      3 ...  99998  99999 100000]
+Experiment result: FAILED
+Runtime of the program: 177.8488 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 234054
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27418
+ripple size: 24677
+codewords with degree 1: 11531
+ripple size: 10887
+codewords with degree 1: 6578
+ripple size: 6347
+codewords with degree 1: 4456
+ripple size: 4340
+codewords with degree 1: 3287
+ripple size: 3201
+codewords with degree 1: 2536
+ripple size: 2486
+codewords with degree 1: 2104
+ripple size: 2077
+codewords with degree 1: 1755
+ripple size: 1723
+codewords with degree 1: 1515
+ripple size: 1493
+codewords with degree 1: 1311
+ripple size: 1299
+codewords with degree 1: 1215
+ripple size: 1199
+codewords with degree 1: 1129
+ripple size: 1117
+codewords with degree 1: 1065
+ripple size: 1050
+codewords with degree 1: 984
+ripple size: 972
+codewords with degree 1: 936
+ripple size: 928
+codewords with degree 1: 925
+ripple size: 912
+codewords with degree 1: 941
+ripple size: 930
+codewords with degree 1: 910
+ripple size: 896
+codewords with degree 1: 880
+ripple size: 870
+codewords with degree 1: 864
+ripple size: 857
+Solved symbols: 68262/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[     3     10     13 ...  99996  99997 100000]
+Experiment result: FAILED
+Runtime of the program: 186.5096 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 146317
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27904
+ripple size: 25084
+codewords with degree 1: 11610
+ripple size: 10940
+codewords with degree 1: 6641
+ripple size: 6382
+codewords with degree 1: 4430
+ripple size: 4304
+codewords with degree 1: 3206
+ripple size: 3139
+codewords with degree 1: 2567
+ripple size: 2512
+codewords with degree 1: 2093
+ripple size: 2062
+codewords with degree 1: 1800
+ripple size: 1767
+codewords with degree 1: 1548
+ripple size: 1533
+codewords with degree 1: 1344
+ripple size: 1331
+codewords with degree 1: 1175
+ripple size: 1168
+codewords with degree 1: 1061
+ripple size: 1049
+codewords with degree 1: 1014
+ripple size: 1007
+codewords with degree 1: 987
+ripple size: 976
+codewords with degree 1: 943
+ripple size: 929
+codewords with degree 1: 873
+ripple size: 867
+codewords with degree 1: 837
+ripple size: 826
+codewords with degree 1: 847
+ripple size: 834
+codewords with degree 1: 838
+ripple size: 831
+codewords with degree 1: 847
+ripple size: 839
+Solved symbols: 68381/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    2     5     9 ... 99994 99995 99997]
+Experiment result: FAILED
+Runtime of the program: 298.5161 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 772247
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 13
+Decoding process starts...
+codewords with degree 1: 27744
+ripple size: 24933
+codewords with degree 1: 11607
+ripple size: 10981
+codewords with degree 1: 6750
+ripple size: 6503
+codewords with degree 1: 4529
+ripple size: 4361
+codewords with degree 1: 3284
+ripple size: 3210
+codewords with degree 1: 2582
+ripple size: 2533
+codewords with degree 1: 2131
+ripple size: 2087
+codewords with degree 1: 1793
+ripple size: 1768
+codewords with degree 1: 1538
+ripple size: 1512
+codewords with degree 1: 1394
+ripple size: 1369
+codewords with degree 1: 1239
+ripple size: 1220
+codewords with degree 1: 1138
+ripple size: 1128
+codewords with degree 1: 1079
+ripple size: 1064
+codewords with degree 1: 1014
+ripple size: 1002
+codewords with degree 1: 984
+ripple size: 974
+codewords with degree 1: 952
+ripple size: 945
+codewords with degree 1: 921
+ripple size: 908
+codewords with degree 1: 914
+ripple size: 907
+codewords with degree 1: 906
+ripple size: 897
+codewords with degree 1: 904
+ripple size: 890
+Solved symbols: 69193/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    6     8     9 ... 99985 99991 99999]
+Experiment result: FAILED
+Runtime of the program: 315.9186 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 107474
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27549
+ripple size: 24826
+codewords with degree 1: 11653
+ripple size: 10994
+codewords with degree 1: 6686
+ripple size: 6420
+codewords with degree 1: 4494
+ripple size: 4348
+codewords with degree 1: 3237
+ripple size: 3175
+codewords with degree 1: 2568
+ripple size: 2512
+codewords with degree 1: 2007
+ripple size: 1975
+codewords with degree 1: 1703
+ripple size: 1680
+codewords with degree 1: 1476
+ripple size: 1451
+codewords with degree 1: 1270
+ripple size: 1249
+codewords with degree 1: 1135
+ripple size: 1124
+codewords with degree 1: 1052
+ripple size: 1041
+codewords with degree 1: 988
+ripple size: 978
+codewords with degree 1: 949
+ripple size: 936
+codewords with degree 1: 949
+ripple size: 944
+codewords with degree 1: 881
+ripple size: 870
+codewords with degree 1: 860
+ripple size: 852
+codewords with degree 1: 846
+ripple size: 837
+codewords with degree 1: 839
+ripple size: 830
+codewords with degree 1: 832
+ripple size: 823
+Solved symbols: 67866/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[     5      7     14 ...  99995  99998 100000]
+Experiment result: FAILED
+Runtime of the program: 317.1350 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 709571
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 13
+Decoding process starts...
+codewords with degree 1: 27767
+ripple size: 24984
+codewords with degree 1: 11597
+ripple size: 10959
+codewords with degree 1: 6764
+ripple size: 6470
+codewords with degree 1: 4435
+ripple size: 4300
+codewords with degree 1: 3230
+ripple size: 3139
+codewords with degree 1: 2432
+ripple size: 2386
+codewords with degree 1: 2047
+ripple size: 2005
+codewords with degree 1: 1717
+ripple size: 1686
+codewords with degree 1: 1499
+ripple size: 1479
+codewords with degree 1: 1399
+ripple size: 1378
+codewords with degree 1: 1263
+ripple size: 1243
+codewords with degree 1: 1168
+ripple size: 1148
+codewords with degree 1: 1024
+ripple size: 1010
+codewords with degree 1: 943
+ripple size: 934
+codewords with degree 1: 922
+ripple size: 910
+codewords with degree 1: 861
+ripple size: 854
+codewords with degree 1: 850
+ripple size: 841
+codewords with degree 1: 830
+ripple size: 820
+codewords with degree 1: 820
+ripple size: 812
+codewords with degree 1: 787
+ripple size: 780
+Solved symbols: 68139/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    3     7     8 ... 99980 99998 99999]
+Experiment result: FAILED
+Runtime of the program: 254.9149 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 776647
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 14
+Decoding process starts...
+codewords with degree 1: 27674
+ripple size: 24973
+codewords with degree 1: 11585
+ripple size: 10900
+codewords with degree 1: 6693
+ripple size: 6426
+codewords with degree 1: 4422
+ripple size: 4291
+codewords with degree 1: 3260
+ripple size: 3182
+codewords with degree 1: 2548
+ripple size: 2494
+codewords with degree 1: 2092
+ripple size: 2046
+codewords with degree 1: 1721
+ripple size: 1688
+codewords with degree 1: 1479
+ripple size: 1448
+codewords with degree 1: 1286
+ripple size: 1266
+codewords with degree 1: 1167
+ripple size: 1156
+codewords with degree 1: 1069
+ripple size: 1061
+codewords with degree 1: 999
+ripple size: 988
+codewords with degree 1: 951
+ripple size: 939
+codewords with degree 1: 902
+ripple size: 890
+codewords with degree 1: 828
+ripple size: 822
+codewords with degree 1: 770
+ripple size: 765
+codewords with degree 1: 750
+ripple size: 743
+codewords with degree 1: 746
+ripple size: 741
+codewords with degree 1: 754
+ripple size: 750
+Solved symbols: 67570/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    4     5     8 ... 99992 99996 99998]
+Experiment result: FAILED
+Runtime of the program: 198.1245 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 935519
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 13
+Decoding process starts...
+codewords with degree 1: 27612
+ripple size: 24909
+codewords with degree 1: 11702
+ripple size: 11014
+codewords with degree 1: 6780
+ripple size: 6505
+codewords with degree 1: 4555
+ripple size: 4429
+codewords with degree 1: 3406
+ripple size: 3299
+codewords with degree 1: 2657
+ripple size: 2596
+codewords with degree 1: 2166
+ripple size: 2129
+codewords with degree 1: 1844
+ripple size: 1815
+codewords with degree 1: 1610
+ripple size: 1590
+codewords with degree 1: 1453
+ripple size: 1430
+codewords with degree 1: 1307
+ripple size: 1292
+codewords with degree 1: 1237
+ripple size: 1218
+codewords with degree 1: 1092
+ripple size: 1074
+codewords with degree 1: 1032
+ripple size: 1021
+codewords with degree 1: 1006
+ripple size: 986
+codewords with degree 1: 960
+ripple size: 948
+codewords with degree 1: 919
+ripple size: 904
+codewords with degree 1: 898
+ripple size: 885
+codewords with degree 1: 913
+ripple size: 900
+codewords with degree 1: 914
+ripple size: 896
+Solved symbols: 69841/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    3     6     7 ... 99985 99992 99999]
+Experiment result: FAILED
+Runtime of the program: 212.1333 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 571859
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27695
+ripple size: 24975
+codewords with degree 1: 11728
+ripple size: 11035
+codewords with degree 1: 6751
+ripple size: 6483
+codewords with degree 1: 4463
+ripple size: 4334
+codewords with degree 1: 3271
+ripple size: 3198
+codewords with degree 1: 2506
+ripple size: 2469
+codewords with degree 1: 2075
+ripple size: 2033
+codewords with degree 1: 1696
+ripple size: 1670
+codewords with degree 1: 1481
+ripple size: 1459
+codewords with degree 1: 1313
+ripple size: 1292
+codewords with degree 1: 1151
+ripple size: 1143
+codewords with degree 1: 1055
+ripple size: 1045
+codewords with degree 1: 974
+ripple size: 963
+codewords with degree 1: 913
+ripple size: 903
+codewords with degree 1: 859
+ripple size: 852
+codewords with degree 1: 845
+ripple size: 835
+codewords with degree 1: 795
+ripple size: 786
+codewords with degree 1: 768
+ripple size: 763
+codewords with degree 1: 752
+ripple size: 742
+codewords with degree 1: 736
+ripple size: 732
+Solved symbols: 67713/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    3     4     7 ... 99995 99997 99998]
+Experiment result: FAILED
+Runtime of the program: 204.8377 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 91162
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 14
+Decoding process starts...
+codewords with degree 1: 27371
+ripple size: 24743
+codewords with degree 1: 11567
+ripple size: 10908
+codewords with degree 1: 6751
+ripple size: 6488
+codewords with degree 1: 4536
+ripple size: 4385
+codewords with degree 1: 3246
+ripple size: 3174
+codewords with degree 1: 2533
+ripple size: 2486
+codewords with degree 1: 2087
+ripple size: 2048
+codewords with degree 1: 1738
+ripple size: 1708
+codewords with degree 1: 1459
+ripple size: 1443
+codewords with degree 1: 1280
+ripple size: 1266
+codewords with degree 1: 1151
+ripple size: 1139
+codewords with degree 1: 1053
+ripple size: 1036
+codewords with degree 1: 942
+ripple size: 933
+codewords with degree 1: 900
+ripple size: 893
+codewords with degree 1: 862
+ripple size: 855
+codewords with degree 1: 788
+ripple size: 779
+codewords with degree 1: 785
+ripple size: 780
+codewords with degree 1: 779
+ripple size: 771
+codewords with degree 1: 777
+ripple size: 773
+codewords with degree 1: 821
+ripple size: 809
+Solved symbols: 67418/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[     3      4      7 ...  99996  99997 100000]
+Experiment result: FAILED
+Runtime of the program: 200.8636 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 619177
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 13
+Decoding process starts...
+codewords with degree 1: 27551
+ripple size: 24875
+codewords with degree 1: 11632
+ripple size: 10938
+codewords with degree 1: 6731
+ripple size: 6434
+codewords with degree 1: 4504
+ripple size: 4358
+codewords with degree 1: 3274
+ripple size: 3208
+codewords with degree 1: 2549
+ripple size: 2490
+codewords with degree 1: 2017
+ripple size: 1981
+codewords with degree 1: 1649
+ripple size: 1624
+codewords with degree 1: 1419
+ripple size: 1405
+codewords with degree 1: 1213
+ripple size: 1196
+codewords with degree 1: 1107
+ripple size: 1100
+codewords with degree 1: 1000
+ripple size: 990
+codewords with degree 1: 965
+ripple size: 959
+codewords with degree 1: 958
+ripple size: 944
+codewords with degree 1: 898
+ripple size: 890
+codewords with degree 1: 829
+ripple size: 821
+codewords with degree 1: 737
+ripple size: 730
+codewords with degree 1: 695
+ripple size: 689
+codewords with degree 1: 677
+ripple size: 673
+codewords with degree 1: 629
+ripple size: 620
+Solved symbols: 66926/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    1     2     7 ... 99986 99988 99989]
+Experiment result: FAILED
+Runtime of the program: 195.7557 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 442418
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27673
+ripple size: 24990
+codewords with degree 1: 11499
+ripple size: 10827
+codewords with degree 1: 6603
+ripple size: 6364
+codewords with degree 1: 4503
+ripple size: 4345
+codewords with degree 1: 3290
+ripple size: 3199
+codewords with degree 1: 2538
+ripple size: 2485
+codewords with degree 1: 2060
+ripple size: 2028
+codewords with degree 1: 1711
+ripple size: 1692
+codewords with degree 1: 1452
+ripple size: 1432
+codewords with degree 1: 1277
+ripple size: 1262
+codewords with degree 1: 1187
+ripple size: 1172
+codewords with degree 1: 1049
+ripple size: 1031
+codewords with degree 1: 958
+ripple size: 950
+codewords with degree 1: 921
+ripple size: 916
+codewords with degree 1: 889
+ripple size: 877
+codewords with degree 1: 848
+ripple size: 838
+codewords with degree 1: 840
+ripple size: 830
+codewords with degree 1: 812
+ripple size: 800
+codewords with degree 1: 791
+ripple size: 786
+codewords with degree 1: 756
+ripple size: 748
+Solved symbols: 67573/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    1     2    10 ... 99995 99998 99999]
+Experiment result: FAILED
+Runtime of the program: 200.7697 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 33327
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27670
+ripple size: 25015
+codewords with degree 1: 11791
+ripple size: 11081
+codewords with degree 1: 6720
+ripple size: 6443
+codewords with degree 1: 4526
+ripple size: 4398
+codewords with degree 1: 3341
+ripple size: 3258
+codewords with degree 1: 2523
+ripple size: 2480
+codewords with degree 1: 2029
+ripple size: 2000
+codewords with degree 1: 1738
+ripple size: 1712
+codewords with degree 1: 1502
+ripple size: 1482
+codewords with degree 1: 1300
+ripple size: 1272
+codewords with degree 1: 1146
+ripple size: 1134
+codewords with degree 1: 1038
+ripple size: 1026
+codewords with degree 1: 968
+ripple size: 953
+codewords with degree 1: 859
+ripple size: 849
+codewords with degree 1: 792
+ripple size: 782
+codewords with degree 1: 743
+ripple size: 735
+codewords with degree 1: 744
+ripple size: 738
+codewords with degree 1: 779
+ripple size: 774
+codewords with degree 1: 765
+ripple size: 756
+codewords with degree 1: 786
+ripple size: 776
+Solved symbols: 67665/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[   11    12    16 ... 99994 99996 99997]
+Experiment result: FAILED
+Runtime of the program: 340.1558 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 31245
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27719
+ripple size: 25036
+codewords with degree 1: 11707
+ripple size: 11031
+codewords with degree 1: 6678
+ripple size: 6399
+codewords with degree 1: 4491
+ripple size: 4344
+codewords with degree 1: 3264
+ripple size: 3187
+codewords with degree 1: 2480
+ripple size: 2417
+codewords with degree 1: 1990
+ripple size: 1946
+codewords with degree 1: 1684
+ripple size: 1663
+codewords with degree 1: 1459
+ripple size: 1435
+codewords with degree 1: 1270
+ripple size: 1254
+codewords with degree 1: 1135
+ripple size: 1117
+codewords with degree 1: 1019
+ripple size: 1006
+codewords with degree 1: 894
+ripple size: 883
+codewords with degree 1: 865
+ripple size: 850
+codewords with degree 1: 811
+ripple size: 799
+codewords with degree 1: 742
+ripple size: 736
+codewords with degree 1: 706
+ripple size: 704
+codewords with degree 1: 677
+ripple size: 674
+codewords with degree 1: 672
+ripple size: 666
+codewords with degree 1: 670
+ripple size: 665
+Solved symbols: 66813/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    4     9    15 ... 99994 99995 99996]
+Experiment result: FAILED
+Runtime of the program: 246.8222 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 98247
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 27459
+ripple size: 24738
+codewords with degree 1: 11423
+ripple size: 10752
+codewords with degree 1: 6603
+ripple size: 6347
+codewords with degree 1: 4485
+ripple size: 4343
+codewords with degree 1: 3298
+ripple size: 3223
+codewords with degree 1: 2554
+ripple size: 2499
+codewords with degree 1: 2079
+ripple size: 2049
+codewords with degree 1: 1747
+ripple size: 1717
+codewords with degree 1: 1470
+ripple size: 1451
+codewords with degree 1: 1234
+ripple size: 1213
+codewords with degree 1: 1088
+ripple size: 1074
+codewords with degree 1: 1007
+ripple size: 1000
+codewords with degree 1: 925
+ripple size: 912
+codewords with degree 1: 861
+ripple size: 852
+codewords with degree 1: 823
+ripple size: 816
+codewords with degree 1: 802
+ripple size: 793
+codewords with degree 1: 735
+ripple size: 728
+codewords with degree 1: 727
+ripple size: 724
+codewords with degree 1: 751
+ripple size: 747
+codewords with degree 1: 750
+ripple size: 745
+Solved symbols: 66724/100001
+Blocks are not all recovered, we cannot proceed the file writing.
+[    6    14    24 ... 99991 99995 99998]
+Experiment result: FAILED
+Runtime of the program: 186.7669 seconds
+

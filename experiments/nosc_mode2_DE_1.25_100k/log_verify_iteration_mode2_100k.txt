@@ -1,0 +1,791 @@
+[670488, 116740, 26226, 777573, 288390, 256788, 234054, 146317, 772247, 107474, 709571, 776647, 935519, 571859, 91162, 619177, 442418, 33327, 31245, 98247]
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 670488
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29637
+ripple size: 27868
+codewords with degree 1: 14490
+ripple size: 13650
+codewords with degree 1: 9688
+ripple size: 9199
+codewords with degree 1: 7713
+ripple size: 7333
+codewords with degree 1: 6805
+ripple size: 6438
+codewords with degree 1: 6425
+ripple size: 6025
+codewords with degree 1: 6252
+ripple size: 5787
+codewords with degree 1: 6351
+ripple size: 5745
+codewords with degree 1: 6587
+ripple size: 5797
+codewords with degree 1: 6454
+ripple size: 5315
+codewords with degree 1: 5386
+ripple size: 4073
+codewords with degree 1: 3365
+ripple size: 2144
+codewords with degree 1: 1056
+ripple size: 566
+codewords with degree 1: 144
+ripple size: 58
+codewords with degree 1: 2
+ripple size: 2
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 223.3326 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 116740
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29617
+ripple size: 27679
+codewords with degree 1: 14449
+ripple size: 13661
+codewords with degree 1: 9667
+ripple size: 9207
+codewords with degree 1: 7597
+ripple size: 7201
+codewords with degree 1: 6742
+ripple size: 6395
+codewords with degree 1: 6302
+ripple size: 5907
+codewords with degree 1: 6341
+ripple size: 5925
+codewords with degree 1: 6551
+ripple size: 5981
+codewords with degree 1: 6670
+ripple size: 5814
+codewords with degree 1: 6459
+ripple size: 5376
+codewords with degree 1: 5423
+ripple size: 4067
+codewords with degree 1: 3335
+ripple size: 2140
+codewords with degree 1: 1131
+ripple size: 588
+codewords with degree 1: 125
+ripple size: 57
+codewords with degree 1: 6
+ripple size: 2
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 254.6125 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 26226
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29759
+ripple size: 27856
+codewords with degree 1: 14460
+ripple size: 13645
+codewords with degree 1: 9640
+ripple size: 9167
+codewords with degree 1: 7571
+ripple size: 7189
+codewords with degree 1: 6619
+ripple size: 6266
+codewords with degree 1: 6328
+ripple size: 5962
+codewords with degree 1: 6327
+ripple size: 5881
+codewords with degree 1: 6371
+ripple size: 5821
+codewords with degree 1: 6610
+ripple size: 5853
+codewords with degree 1: 6487
+ripple size: 5394
+codewords with degree 1: 5518
+ripple size: 4082
+codewords with degree 1: 3389
+ripple size: 2200
+codewords with degree 1: 1179
+ripple size: 611
+codewords with degree 1: 141
+ripple size: 66
+codewords with degree 1: 15
+ripple size: 7
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 249.9216 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 777573
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29700
+ripple size: 27826
+codewords with degree 1: 14580
+ripple size: 13787
+codewords with degree 1: 9701
+ripple size: 9242
+codewords with degree 1: 7703
+ripple size: 7338
+codewords with degree 1: 6725
+ripple size: 6369
+codewords with degree 1: 6369
+ripple size: 5996
+codewords with degree 1: 6361
+ripple size: 5907
+codewords with degree 1: 6421
+ripple size: 5822
+codewords with degree 1: 6562
+ripple size: 5796
+codewords with degree 1: 6420
+ripple size: 5333
+codewords with degree 1: 5489
+ripple size: 4081
+codewords with degree 1: 3204
+ripple size: 1973
+codewords with degree 1: 979
+ripple size: 494
+codewords with degree 1: 94
+ripple size: 36
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 270.1808 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 288390
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29621
+ripple size: 27747
+codewords with degree 1: 14566
+ripple size: 13776
+codewords with degree 1: 9782
+ripple size: 9253
+codewords with degree 1: 7700
+ripple size: 7349
+codewords with degree 1: 6710
+ripple size: 6348
+codewords with degree 1: 6315
+ripple size: 5958
+codewords with degree 1: 6245
+ripple size: 5821
+codewords with degree 1: 6473
+ripple size: 5885
+codewords with degree 1: 6433
+ripple size: 5670
+codewords with degree 1: 6266
+ripple size: 5197
+codewords with degree 1: 5348
+ripple size: 4015
+codewords with degree 1: 3486
+ripple size: 2237
+codewords with degree 1: 1243
+ripple size: 656
+codewords with degree 1: 200
+ripple size: 85
+codewords with degree 1: 9
+ripple size: 3
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 286.6698 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 256788
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29834
+ripple size: 27952
+codewords with degree 1: 14605
+ripple size: 13769
+codewords with degree 1: 9802
+ripple size: 9322
+codewords with degree 1: 7768
+ripple size: 7362
+codewords with degree 1: 6926
+ripple size: 6548
+codewords with degree 1: 6487
+ripple size: 6073
+codewords with degree 1: 6467
+ripple size: 5954
+codewords with degree 1: 6608
+ripple size: 5967
+codewords with degree 1: 6596
+ripple size: 5719
+codewords with degree 1: 6263
+ripple size: 5086
+codewords with degree 1: 5137
+ripple size: 3800
+codewords with degree 1: 2983
+ripple size: 1912
+codewords with degree 1: 979
+ripple size: 492
+codewords with degree 1: 98
+ripple size: 42
+codewords with degree 1: 4
+ripple size: 2
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 298.1626 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 234054
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29665
+ripple size: 27819
+codewords with degree 1: 14434
+ripple size: 13622
+codewords with degree 1: 9648
+ripple size: 9143
+codewords with degree 1: 7607
+ripple size: 7273
+codewords with degree 1: 6619
+ripple size: 6273
+codewords with degree 1: 6258
+ripple size: 5891
+codewords with degree 1: 6187
+ripple size: 5751
+codewords with degree 1: 6390
+ripple size: 5821
+codewords with degree 1: 6507
+ripple size: 5788
+codewords with degree 1: 6506
+ripple size: 5422
+codewords with degree 1: 5490
+ripple size: 4153
+codewords with degree 1: 3572
+ripple size: 2334
+codewords with degree 1: 1261
+ripple size: 655
+codewords with degree 1: 137
+ripple size: 53
+codewords with degree 1: 6
+ripple size: 2
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 325.8810 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 146317
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29918
+ripple size: 28009
+codewords with degree 1: 14497
+ripple size: 13724
+codewords with degree 1: 9789
+ripple size: 9327
+codewords with degree 1: 7833
+ripple size: 7446
+codewords with degree 1: 6921
+ripple size: 6546
+codewords with degree 1: 6614
+ripple size: 6203
+codewords with degree 1: 6479
+ripple size: 6021
+codewords with degree 1: 6597
+ripple size: 5971
+codewords with degree 1: 6725
+ripple size: 5863
+codewords with degree 1: 6397
+ripple size: 5205
+codewords with degree 1: 4984
+ripple size: 3660
+codewords with degree 1: 2730
+ripple size: 1640
+codewords with degree 1: 727
+ripple size: 359
+codewords with degree 1: 62
+ripple size: 26
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 285.5751 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 772247
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29521
+ripple size: 27655
+codewords with degree 1: 14615
+ripple size: 13817
+codewords with degree 1: 9781
+ripple size: 9283
+codewords with degree 1: 7623
+ripple size: 7245
+codewords with degree 1: 6716
+ripple size: 6387
+codewords with degree 1: 6352
+ripple size: 5983
+codewords with degree 1: 6275
+ripple size: 5825
+codewords with degree 1: 6479
+ripple size: 5883
+codewords with degree 1: 6499
+ripple size: 5694
+codewords with degree 1: 6393
+ripple size: 5295
+codewords with degree 1: 5427
+ripple size: 4054
+codewords with degree 1: 3330
+ripple size: 2177
+codewords with degree 1: 1165
+ripple size: 624
+codewords with degree 1: 158
+ripple size: 73
+codewords with degree 1: 11
+ripple size: 5
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 289.2757 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 107474
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29840
+ripple size: 27908
+codewords with degree 1: 14570
+ripple size: 13771
+codewords with degree 1: 9651
+ripple size: 9153
+codewords with degree 1: 7563
+ripple size: 7187
+codewords with degree 1: 6716
+ripple size: 6357
+codewords with degree 1: 6306
+ripple size: 5918
+codewords with degree 1: 6224
+ripple size: 5774
+codewords with degree 1: 6224
+ripple size: 5679
+codewords with degree 1: 6406
+ripple size: 5668
+codewords with degree 1: 6367
+ripple size: 5319
+codewords with degree 1: 5428
+ripple size: 4145
+codewords with degree 1: 3581
+ripple size: 2330
+codewords with degree 1: 1289
+ripple size: 697
+codewords with degree 1: 198
+ripple size: 88
+codewords with degree 1: 14
+ripple size: 6
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 1539.2822 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 709571
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29546
+ripple size: 27747
+codewords with degree 1: 14336
+ripple size: 13529
+codewords with degree 1: 9766
+ripple size: 9278
+codewords with degree 1: 7755
+ripple size: 7367
+codewords with degree 1: 6759
+ripple size: 6385
+codewords with degree 1: 6392
+ripple size: 6036
+codewords with degree 1: 6328
+ripple size: 5872
+codewords with degree 1: 6366
+ripple size: 5761
+codewords with degree 1: 6445
+ripple size: 5694
+codewords with degree 1: 6243
+ripple size: 5203
+codewords with degree 1: 5364
+ripple size: 4063
+codewords with degree 1: 3490
+ripple size: 2286
+codewords with degree 1: 1263
+ripple size: 692
+codewords with degree 1: 203
+ripple size: 87
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 6577.4039 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 776647
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29710
+ripple size: 27869
+codewords with degree 1: 14519
+ripple size: 13714
+codewords with degree 1: 9653
+ripple size: 9160
+codewords with degree 1: 7714
+ripple size: 7346
+codewords with degree 1: 6721
+ripple size: 6351
+codewords with degree 1: 6316
+ripple size: 5975
+codewords with degree 1: 6373
+ripple size: 5918
+codewords with degree 1: 6509
+ripple size: 5890
+codewords with degree 1: 6641
+ripple size: 5821
+codewords with degree 1: 6453
+ripple size: 5375
+codewords with degree 1: 5467
+ripple size: 4057
+codewords with degree 1: 3219
+ripple size: 2004
+codewords with degree 1: 984
+ripple size: 481
+codewords with degree 1: 91
+ripple size: 38
+codewords with degree 1: 3
+ripple size: 1
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 5698.5841 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 935519
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29687
+ripple size: 27871
+codewords with degree 1: 14560
+ripple size: 13734
+codewords with degree 1: 9736
+ripple size: 9274
+codewords with degree 1: 7739
+ripple size: 7352
+codewords with degree 1: 6877
+ripple size: 6491
+codewords with degree 1: 6389
+ripple size: 6033
+codewords with degree 1: 6495
+ripple size: 5995
+codewords with degree 1: 6560
+ripple size: 5927
+codewords with degree 1: 6631
+ripple size: 5841
+codewords with degree 1: 6340
+ripple size: 5210
+codewords with degree 1: 5230
+ripple size: 3833
+codewords with degree 1: 3049
+ripple size: 1912
+codewords with degree 1: 958
+ripple size: 490
+codewords with degree 1: 93
+ripple size: 37
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 7604.1127 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 571859
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29616
+ripple size: 27765
+codewords with degree 1: 14514
+ripple size: 13723
+codewords with degree 1: 9681
+ripple size: 9175
+codewords with degree 1: 7625
+ripple size: 7234
+codewords with degree 1: 6644
+ripple size: 6310
+codewords with degree 1: 6370
+ripple size: 5995
+codewords with degree 1: 6285
+ripple size: 5863
+codewords with degree 1: 6379
+ripple size: 5807
+codewords with degree 1: 6519
+ripple size: 5746
+codewords with degree 1: 6318
+ripple size: 5279
+codewords with degree 1: 5459
+ripple size: 4127
+codewords with degree 1: 3487
+ripple size: 2278
+codewords with degree 1: 1185
+ripple size: 629
+codewords with degree 1: 155
+ripple size: 66
+codewords with degree 1: 9
+ripple size: 3
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 6218.4935 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 91162
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29606
+ripple size: 27763
+codewords with degree 1: 14508
+ripple size: 13743
+codewords with degree 1: 9769
+ripple size: 9301
+codewords with degree 1: 7718
+ripple size: 7332
+codewords with degree 1: 6891
+ripple size: 6525
+codewords with degree 1: 6471
+ripple size: 6076
+codewords with degree 1: 6392
+ripple size: 5920
+codewords with degree 1: 6548
+ripple size: 5958
+codewords with degree 1: 6670
+ripple size: 5858
+codewords with degree 1: 6436
+ripple size: 5251
+codewords with degree 1: 5188
+ripple size: 3859
+codewords with degree 1: 3142
+ripple size: 1945
+codewords with degree 1: 849
+ripple size: 435
+codewords with degree 1: 82
+ripple size: 34
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 7508.7271 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 619177
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29633
+ripple size: 27778
+codewords with degree 1: 14462
+ripple size: 13675
+codewords with degree 1: 9697
+ripple size: 9223
+codewords with degree 1: 7689
+ripple size: 7300
+codewords with degree 1: 6757
+ripple size: 6401
+codewords with degree 1: 6430
+ripple size: 6054
+codewords with degree 1: 6348
+ripple size: 5884
+codewords with degree 1: 6435
+ripple size: 5910
+codewords with degree 1: 6564
+ripple size: 5781
+codewords with degree 1: 6431
+ripple size: 5303
+codewords with degree 1: 5388
+ripple size: 4013
+codewords with degree 1: 3255
+ripple size: 2076
+codewords with degree 1: 999
+ripple size: 533
+codewords with degree 1: 154
+ripple size: 68
+codewords with degree 1: 3
+ripple size: 1
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 6286.2281 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 442418
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29746
+ripple size: 27903
+codewords with degree 1: 14455
+ripple size: 13651
+codewords with degree 1: 9689
+ripple size: 9219
+codewords with degree 1: 7701
+ripple size: 7317
+codewords with degree 1: 6756
+ripple size: 6417
+codewords with degree 1: 6449
+ripple size: 6061
+codewords with degree 1: 6322
+ripple size: 5865
+codewords with degree 1: 6459
+ripple size: 5881
+codewords with degree 1: 6578
+ripple size: 5773
+codewords with degree 1: 6375
+ripple size: 5259
+codewords with degree 1: 5344
+ripple size: 4008
+codewords with degree 1: 3216
+ripple size: 2060
+codewords with degree 1: 1062
+ripple size: 513
+codewords with degree 1: 145
+ripple size: 67
+codewords with degree 1: 14
+ripple size: 6
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 4492.8264 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 33327
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 11
+Decoding process starts...
+codewords with degree 1: 29440
+ripple size: 27564
+codewords with degree 1: 14361
+ripple size: 13594
+codewords with degree 1: 9605
+ripple size: 9151
+codewords with degree 1: 7626
+ripple size: 7250
+codewords with degree 1: 6687
+ripple size: 6360
+codewords with degree 1: 6319
+ripple size: 5964
+codewords with degree 1: 6321
+ripple size: 5888
+codewords with degree 1: 6441
+ripple size: 5838
+codewords with degree 1: 6505
+ripple size: 5694
+codewords with degree 1: 6321
+ripple size: 5289
+codewords with degree 1: 5588
+ripple size: 4288
+codewords with degree 1: 3548
+ripple size: 2321
+codewords with degree 1: 1275
+ripple size: 695
+codewords with degree 1: 214
+ripple size: 98
+codewords with degree 1: 10
+ripple size: 6
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 8062.8620 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 31245
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 12
+Decoding process starts...
+codewords with degree 1: 29693
+ripple size: 27794
+codewords with degree 1: 14454
+ripple size: 13650
+codewords with degree 1: 9692
+ripple size: 9194
+codewords with degree 1: 7706
+ripple size: 7314
+codewords with degree 1: 6716
+ripple size: 6368
+codewords with degree 1: 6347
+ripple size: 6000
+codewords with degree 1: 6361
+ripple size: 5892
+codewords with degree 1: 6451
+ripple size: 5857
+codewords with degree 1: 6542
+ripple size: 5774
+codewords with degree 1: 6448
+ripple size: 5325
+codewords with degree 1: 5405
+ripple size: 4060
+codewords with degree 1: 3318
+ripple size: 2133
+codewords with degree 1: 1156
+ripple size: 579
+codewords with degree 1: 138
+ripple size: 59
+codewords with degree 1: 3
+ripple size: 1
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 6699.2009 seconds
+
+Running experiment: NOSC | Redundancy: 1.25
+WinSize: 100000 | Loss: 0
+Seed: 98247
+Pass codewords to the decoder.
+Maximum degree number of the codewords: 10
+Decoding process starts...
+codewords with degree 1: 29615
+ripple size: 27754
+codewords with degree 1: 14423
+ripple size: 13647
+codewords with degree 1: 9591
+ripple size: 9154
+codewords with degree 1: 7854
+ripple size: 7502
+codewords with degree 1: 6885
+ripple size: 6504
+codewords with degree 1: 6493
+ripple size: 6083
+codewords with degree 1: 6420
+ripple size: 5950
+codewords with degree 1: 6515
+ripple size: 5930
+codewords with degree 1: 6701
+ripple size: 5839
+codewords with degree 1: 6503
+ripple size: 5310
+codewords with degree 1: 5288
+ripple size: 3900
+codewords with degree 1: 2980
+ripple size: 1893
+codewords with degree 1: 977
+ripple size: 488
+codewords with degree 1: 112
+ripple size: 43
+codewords with degree 1: 5
+ripple size: 3
+Solved symbols: 100001/100001
+Experiment result: SUCCESS
+Runtime of the program: 10972.4889 seconds
+
