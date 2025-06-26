@@ -1,11 +1,13 @@
 import numpy as np
 from scipy.stats import poisson, binom
 import matplotlib.pyplot as plt
+import os 
+import psutil
 
 # Parameters
-alpha, delta = 0.98, 0.025
+alpha, delta = 0.891, 0.1
 L_show, L_full = 80000, 160000
-w, max_iter, r = 600, 1000, 0
+w, max_iter, r = 600, 3000, 0
 k = 4
 # Create averaging window
 # w = int(w/alpha)
@@ -28,24 +30,32 @@ S1 = np.ones((max_iter + 1, L_full))
 S2 = np.ones((max_iter + 1, L_full))
 S3 = np.ones((max_iter + 1, L_full))
 S4 = np.ones((max_iter + 1, L_full))
-C1 = []
-C2 = []
+
+# Boundary Condition
+S2_alt_pad = np.empty(L_full + w - 1)
+S3_alt_pad = np.empty(L_full + w - 1)
+S4_alt_pad = np.empty(L_full + w - 1)
+S2_alt_pad[:w-1] = 0
+S3_alt_pad[:w-1] = 0
+S4_alt_pad[:w-1] = 0
+C2_raw_pad = np.empty(L_full + w - 1)
+C2_raw_pad[L_full:] = 1
 
 # Iteration loop
 conv_metric = np.ones((max_iter + 1, L_full))
 while conv_metric[r][:L_show].max() > 1e-3 and r < max_iter:
     
     # Vectorized sliding‐window average via convolution
-    S2_alt = np.concat([np.zeros(w-1), S2[r]], axis=-1)
-    S3_alt = np.concat([np.zeros(w-1), S3[r]], axis=-1)
-    S4_alt = np.concat([np.zeros(w-1), S4[r]], axis=-1)
-    avg_S2 = np.convolve(S2_alt, p2, mode='valid')
-    avg_S3 = np.convolve(S3_alt, p3, mode='valid')
+    S2_alt_pad[w-1:] = S2[r]
+    S3_alt_pad[w-1:] = S3[r]
+    S4_alt_pad[w-1:] = S4[r]
+    avg_S2 = np.convolve(S2_alt_pad, p2, mode='valid')
+    avg_S3 = np.convolve(S3_alt_pad, p3, mode='valid')
     
     assert avg_S2.shape[-1] == L_full
     assert avg_S3.shape[-1] == L_full
     if k == 4:
-        avg_S4 = np.convolve(S4_alt, p4, mode='valid')
+        avg_S4 = np.convolve(S4_alt_pad, p4, mode='valid')
         assert avg_S4.shape[-1] == L_full
     
     # Update C
@@ -60,11 +70,11 @@ while conv_metric[r][:L_show].max() > 1e-3 and r < max_iter:
         C2_raw = 1 + (C2_raw-1) * miss_from_4
 
     #Padding + Correlate: L_full
-    C2_raw = np.concat([C2_raw, np.ones(w-1)])
-    avg_C2 = np.correlate(C2_raw, p2, mode='valid')
-    avg_C3 = np.correlate(C2_raw, p3, mode='valid')
+    C2_raw_pad[:L_full] = C2_raw
+    avg_C2 = np.correlate(C2_raw_pad, p2, mode='valid')
+    avg_C3 = np.correlate(C2_raw_pad, p3, mode='valid')
     if k == 4:
-        avg_C4 = np.correlate(C2_raw, p4, mode='valid')
+        avg_C4 = np.correlate(C2_raw_pad, p4, mode='valid')
     
     # Update S1, S2
     S1[r + 1] = avg_C2 * avg_C3 
@@ -82,6 +92,8 @@ while conv_metric[r][:L_show].max() > 1e-3 and r < max_iter:
         conv_metric[r + 1] *= avg_C4
 
     print(f"t={r}: S={np.sum(conv_metric[r][:L_show])/L_show}")
+    if r % 100 == 0:
+        print(f"Memory at iter {r}: {psutil.Process(os.getpid()).memory_info().rss/1e9:.2f} GB")
     r += 1
     
 print(f"iteration number: {r}")
