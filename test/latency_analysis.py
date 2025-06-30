@@ -10,7 +10,7 @@ def calculate_statistics(differences):
     return avg, median, percentile_95
 
 # Read the CSV file
-file_pattern = "experiments/sf_0320_2025032*_0.csv"  
+file_pattern = "./experiments/sf_20250603*_0.0_1.08.csv"  
 file_list = glob.glob(file_pattern)
 # print(file_list)
 differences = []
@@ -32,8 +32,8 @@ for filename in file_list:
                     if (timestamp < id_val+1): print(timestamp, id_list)
                     # assert(timestamp>=id_val+1)
                     differences.append((timestamp-1)*(1+loss)-(int(id_val*redundancy)))
-            except ValueError:
                 print(timestamp)
+            except ValueError:
                 continue
 
 # Calculate statistics

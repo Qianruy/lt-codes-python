@@ -1,6 +1,6 @@
 from .base_decoder import *
-from numba import njit, prange
 from decode_logging import *
+from datetime import datetime
 
 class IterativeDecoder(Decoder):
     """
@@ -42,8 +42,11 @@ class IterativeDecoder(Decoder):
     
     def get_all(self) -> Optional[int]:
         round = 0
+        ripple_stats = []
+        decoded_stats = []
         while True:
             round += 1
+            # if round > 1: break # test for only the first several iterations
             ripple = (self.buff.degree == 1)
             # loop runs until no codewords of degree 1 are left 
             if not np.any(ripple): break
@@ -58,11 +61,14 @@ class IterativeDecoder(Decoder):
             #     self.log.log_codeword_degree_removal(idx, cw_id, round)
 
             # remove existing index from codewords
+            print("codewords with degree 1: {}".format(np.count_nonzero(index)))
+            decoded_stats.append(np.count_nonzero(index))
             index = np.unique(index)
             # log index of decoded symbols for each round
             self.log.log_decoded_symbols(round, index)
 
             print("ripple size: {}".format(np.count_nonzero(index)))
+            ripple_stats.append(np.count_nonzero(index))
             index = index * ~self.collected[index]
             self.collected[index] = True
 
@@ -70,6 +76,17 @@ class IterativeDecoder(Decoder):
             
         num_of_solved = np.count_nonzero(self.collected)
         num_of_source = self.collected.shape[0]
+        
+        ripple_sum = 0; decoded_sum = 0
+        rows = []
+
+        for i, (r, d) in enumerate(zip(ripple_stats, decoded_stats), start=1):
+            ripple_sum += r; decoded_sum += d
+            rows.append([i, ripple_sum, decoded_sum, 1 - ripple_sum / num_of_source, 1 - decoded_sum / self.buff.data.size])
+        now = datetime.now()
+        timestamp = now.strftime("%Y%m%d%H%M%S")
+        self.log._write_to_csv(f"./experiments/decoding_stats_{timestamp}.csv", rows)
+
         print(f"Solved symbols: {num_of_solved}/{num_of_source}")
         # write log to the file
         # self.log._write_to_json("./experiments/decoding_log.json")

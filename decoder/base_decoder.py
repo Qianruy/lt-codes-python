@@ -7,6 +7,7 @@ from tools import *
 from symbols import *
 from collections import *
 from joblib import Parallel, delayed
+from numba import njit, prange
 
 # for alignement, index=0 corresponds to no input. 
 # actual packet indices start from 1. 

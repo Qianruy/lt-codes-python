@@ -1,6 +1,7 @@
 import json
 import os
 import numpy as np
+import random
 import time
 import math
 from encoder import *
@@ -25,51 +26,46 @@ def run_experiment(config):
     redundancy = config["redundancy"]
     windowsize = config["windowsize"]
     numofdegree = config["numofdegree"]
-    codetype = config["codetype"]
+    encodertype = config["encodertype"]
+    decodertype = config["decodertype"]
     lossrate = config["lossrate"]
     if "seed" in config: seed = config["seed"]
     overlap = config["overlap"] if "overlap" in config else 0.5
     
-    print(f"Running experiment: {codetype} | Redundancy: {redundancy} | WinSize: {windowsize}")
+    print(f"Running experiment: {encodertype} | Redundancy: {redundancy}")
 
     # Initialize encoder
-    if codetype == "PLOW":
-        print(f"Degree: {numofdegree} | Loss: {lossrate}")
-        encoder = PlowEncoder(1024, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
-    elif codetype == "WALZER":
-        print(f"Degree: {numofdegree} | Loss: {lossrate}")
-        encoder = WalzerEncoder(1024, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
-    elif codetype == "LT":
-        encoder = LubyEncoder(np.array(robust_distribution(N-1)), 1024, 10000)
-    elif codetype == "SF":
-        print(f"Overlap: {overlap} ")
-        encoder = SlidingFountainEncoder(np.array(robust_distribution(windowsize-1)), 1024, wdn_size=windowsize, overlap=overlap)
+    if encodertype == "PLOW":
+        print(f"Degree: {numofdegree} | Loss: {lossrate} | WinSize: {windowsize}")
+        encoder = PlowEncoder(1, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
+    elif encodertype == "WALZER":
+        print(f"Degree: {numofdegree} | Loss: {lossrate} | WinSize: {windowsize}")
+        encoder = WalzerEncoder(1, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
+    elif encodertype == "LT":
+        print(f"WinSize: {N}")
+        encoder = LubyEncoder(np.array(robust_distribution(N-1)), 1, redundancy=redundancy, seed=10000)
+    elif encodertype == "SF":
+        print(f"WinSize: {windowsize} | Overlap: {overlap} ")
+        encoder = SlidingFountainEncoder(np.array(robust_distribution(windowsize-1)), 1, wdn_size=windowsize, overlap=overlap)
+    elif encodertype == "NOSC":
+        print(f"WinSize: {N} | Loss: {lossrate}")
+        encoder = NoscEncoder(1, redundancy=redundancy, maxdegree=numofdegree, seed=seed)
     else:
-        raise ValueError(f"Unsupported code type: {codetype}")
+        raise ValueError(f"Unsupported code type: {encodertype}")
 
-    encoder.put_bat(np.ones((N, 1024), dtype=np.uint8))
+    encoder.put_bat(np.ones((N, 1), dtype=np.uint8))
     print("Pass codewords to the decoder.")
 
     # Initialize decoder and insert encoded data into the decoder
-    if codetype == "PLOW":
-        decoder = IterativeDecoder(numofdegree*5, 1024, lossrate=lossrate)
-        decoder.put_bat(encoder.get_all())
-    elif codetype == "WALZER":
-        decoder = IterativeDecoder(numofdegree*5, 1024, lossrate=lossrate)
-        decoder.put_bat(encoder.get_all())
-    elif codetype == "LT":
-        decoder = IterativeDecoder(windowsize, 1024)
-        decoder.put_bat(encoder.get_bat(int(N*redundancy)))
-    elif codetype == "SF":
-        decoder = IterativeDecoder(windowsize, 1024)
-        shift = int((1-overlap) * windowsize)
-        for i in range((N-windowsize)//shift + 1):
-            decoder.put_bat(encoder.get_bat(int(windowsize*redundancy)))
-            encoder.shift_window()
-            encoder.remove_bat(shift)
+    if encodertype in ["PLOW", "WALZER", "NOSC"]: degree = numofdegree*5
+    elif  encodertype in ["LT", "SF"]: degree = windowsize
+    if decodertype == "iterative":
+        decoder = IterativeDecoder(degree, 1, lossrate=lossrate)
+    elif decodertype == "fcfp":
+        decoder = FIFODecoder(degree, 1, lossrate=lossrate) 
     else:
-        raise ValueError(f"Unsupported code type: {codetype}")
-    
+        raise ValueError(f"Unsupported code type: {encodertype}")
+    decoder.put_bat(encoder.get_all())
     print("Decoding process starts...")
     
     # Check if decoding was successful
@@ -91,7 +87,10 @@ def binary_search(config, start, end):
         config["redundancy"] = round(r, 4)
         
         res = 0
+        seeds = random.sample(range(1, 1000000), NUM_OF_TRIALS)
         for i in range(NUM_OF_TRIALS):
+            config['seed'] = seeds[i]
+            print("seeds: ", seeds[i])
             success = run_experiment(config)
             if success: res += 1
 
@@ -107,20 +106,25 @@ if __name__ == "__main__":
     config = load_config(CONFIG_FILE_PATH)
 
     # Run experiments for each combination of parameters
-    for t in config["codetype"]:
+    random.seed(42)
+    seeds = random.sample(range(1, 1000000), 100)
+    print("seeds: ", seeds)
+    for t in config["encodertype"]:
         for deg in config["numofdegree"]:
             for wsize in config["windowsize"]:
                 for loss in config["lossrate"]:
-                    cur_config = config.copy()
-                    cur_config.update({
-                        "codetype": t,
-                        "numofdegree": deg,
-                        "windowsize": wsize,
-                        "lossrate": loss
-                    })
-                    
-                    if config.get("binary_search", False):
-                        start, end = 1.0, 2.5
-                        binary_search(cur_config, start, end)
-                    else:
-                        run_experiment(cur_config)
+                    for seed in seeds:
+                        cur_config = config.copy()
+                        cur_config.update({
+                            "encodertype": t,
+                            "numofdegree": deg,
+                            "windowsize": wsize,
+                            "lossrate": loss,
+                            "seed": seed
+                        })
+                        
+                        if config.get("binary_search", False):
+                            start, end = 1.0, 2.5
+                            binary_search(cur_config, start, end)
+                        else:
+                            run_experiment(cur_config)

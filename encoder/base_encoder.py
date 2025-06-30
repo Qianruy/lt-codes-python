@@ -26,6 +26,13 @@ class Encoder(ABC):
         pass
 
     @abstractmethod
+    def get_all(self) -> CodewordBatch:
+        """
+        get all codeword from encoder
+        """
+        pass
+
+    @abstractmethod
     def put_one(self, data: np.ndarray):
         """
         put input into encoder

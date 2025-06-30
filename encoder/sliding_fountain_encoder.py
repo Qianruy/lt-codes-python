@@ -1,11 +1,12 @@
 from .luby_encoder import *
 
 class SlidingFountainEncoder(LubyEncoder):
-    def __init__(self, dd, block, wdn_size: int= 2000, overlap = 0.5, seed = 42):
+    def __init__(self, dd, block, wdn_size: int= 2000, overlap = 0.5, seed = 42, simulate = False):
         super().__init__(dd, block, seed)
         self.wdn_size = wdn_size
         self.overlap = overlap
         self.start = 0
+        self.simulate = simulate
 
     def get_bat(self, batch: int) -> CodewordBatch:
         """
@@ -15,6 +16,7 @@ class SlidingFountainEncoder(LubyEncoder):
         degrees = (self.rng.random(size=(batch, 1)) > self.prob).sum(axis=-1) 
         indices = np.zeros((batch, self.prob.shape[0]), dtype=np.int_)
         seeds = self.rng.random(size=batch)
+        print(f"Length: {(indices.shape)}")
         @delayed
         def fill(b):
             rng = np.random.default_rng(int(10000 * seeds[b]))
@@ -22,13 +24,15 @@ class SlidingFountainEncoder(LubyEncoder):
             indices[b] = rng.choice(np.arange(self.start+1, self.start+self.wdn_size+1), (self.prob.shape[0],), replace=False)
         Parallel(n_jobs=4, require='sharedmem')(fill(b) for b in range(batch))
         indices = (np.arange(1, self.wdn_size+1) <= degrees.reshape(-1, 1)) * indices
+        print(f"Length: {(indices.shape)}")
         # Dealing with indices because some symbols are removed after shifting
         selected_indices = np.where(indices > self.start, indices-self.start, indices)
         data = np.zeros((batch, self.data.shape[1]), dtype=np.uint8)
-        for i in range(batch):
-            valid_indices = np.trim_zeros(selected_indices[i])
-            if valid_indices.size > 0:
-                data[i] = np.bitwise_xor.reduce(self.data[valid_indices], axis=0)
+        if self.simulate:
+            for i in range(batch):
+                valid_indices = np.trim_zeros(selected_indices[i])
+                if valid_indices.size > 0:
+                    data[i] = np.bitwise_xor.reduce(self.data[valid_indices], axis=0)
 
         return CodewordBatch(indices, data, degrees)
 
@@ -49,4 +53,25 @@ class SlidingFountainEncoder(LubyEncoder):
         """
         assert(batch <= self.data.shape[0])
         self.data = np.concatenate([self.data[0:1], self.data[batch+1:]])
+    
+    def get_all(self) -> CodewordBatch:
+        print("sf.get_all()")
+        codebatch = CodewordBatch(
+            index=np.zeros((0, self.prob.shape[0]), dtype=np.int64), 
+            data=np.zeros((0, self.block), dtype=np.uint8), 
+            degree=np.zeros((0, ), dtype=np.int64)
+        )
+        print("initialization success")
+        shift = int((1-self.overlap) * self.wdn_size)
+        for i in range((self.data.shape[0]-self.wdn_size)//shift + 1):
+            print("get bactch")
+            codewords = self.get_bat(int(self.wdn_size*self.redundancy))
+            print("start to join")
+            codebatch.join(codewords)
+            print(f"One batch joined in round {i}!")
+            self.shift_window()
+            self.remove_bat(shift)
+        print(f"Number of codewords: {codebatch.index.shape[0]}")
+        return codebatch
+
     

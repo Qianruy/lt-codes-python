@@ -6,12 +6,14 @@ class LubyEncoder(Encoder):
     @field(data): all the inputs, array of shape [l]
     @field(prob): cummulative sum of degree distribution probability
     """
-    def __init__(self, dd: np.ndarray, block: int, seed: int = 42):
+    def __init__(self, dd: np.ndarray, block: int, redundancy: int = 1, seed: int = 42):
         """
         @param(dd): degree distribution array of shape [d]
         @param(block): the input code word number
         """
         super().__init__()
+        self.block = block
+        self.redundancy = redundancy
         self.data = np.zeros((1, block), dtype=np.uint8)
         self.prob = dd.cumsum(0); self.prob[-1] = 1
         self.rng = np.random.default_rng(seed=seed)
@@ -44,6 +46,10 @@ class LubyEncoder(Encoder):
         indices = (np.arange(1, self.prob.shape[0] + 1) <= degrees.reshape(-1, 1)) * indices
         data = np.bitwise_xor.reduce(self.data[indices], axis=1)
         return CodewordBatch(indices, data, degrees)
+
+    def get_all(self) -> CodewordBatch:
+        batch = int(self.data.shape[0] * self.redundancy)
+        return self.get_bat(batch)
 
     def put_one(self, data: np.ndarray):
         """
