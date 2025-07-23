@@ -32,7 +32,8 @@ class IterativeDecoder(Decoder):
         self.collected.resize(max(1+code.index.max(), self.collected.shape[0]))
 
     def put_bat(self, code: CodewordBatch):
-        code.apply_loss(self.lossrate)
+        # code.apply_loss(self.lossrate, fixed=True)
+        # code.apply_burst_loss(1,5,100)
         self.buff.join(code)
         self.data.resize((max(1+code.index.max(), self.data.shape[0]), self.block))
         self.collected.resize(max(1+code.index.max(), self.collected.shape[0]))

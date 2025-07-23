@@ -1,4 +1,5 @@
 import json
+import csv
 import os
 import numpy as np
 import random
@@ -6,11 +7,13 @@ import time
 import math
 from encoder import *
 from decoder import *
+from channel import *
+from tools import CodewordBatch
 from distributions import ideal_distribution, robust_distribution
 
 # Load configuration from JSON
 CONFIG_FILE_PATH = "experiments/config_example.json"
-NUM_OF_TRIALS = 1
+NUM_OF_TRIALS = 4
 
 def load_config(config_path):
     """ Load JSON configuration file. """
@@ -28,18 +31,34 @@ def run_experiment(config):
     numofdegree = config["numofdegree"]
     encodertype = config["encodertype"]
     decodertype = config["decodertype"]
-    lossrate = config["lossrate"]
+    channeltype = config["channeltype"]
+    
     if "seed" in config: seed = config["seed"]
     overlap = config["overlap"] if "overlap" in config else 0.5
     
     print(f"Running experiment: {encodertype} | Redundancy: {redundancy}")
 
+    # Initialize channel
+    if channeltype == "BEC":
+        lossrate = config["lossrate"]
+        fixed = config["fixed"] if "fixed" in config else False
+        print(f"Channel: {channeltype} | Loss: {lossrate} | Fixed: {fixed}")
+        channel = BEC_Channel(lossrate, fixed)
+    elif channeltype == "GE":
+        alpha = config["alpha"]
+        beta = config["beta"]
+        eps = config["lossrate"]
+        print(f"Channel: {channeltype} | alpha: {alpha} | beta: {beta} | epsilon: {eps}")
+        channel = GE_Channel(alpha, beta, eps)
+    else: 
+        raise ValueError(f"Unsuppported channel type: {channeltype}")
+
     # Initialize encoder
     if encodertype == "PLOW":
-        print(f"Degree: {numofdegree} | Loss: {lossrate} | WinSize: {windowsize}")
+        print(f"Degree: {numofdegree} | WinSize: {windowsize}")
         encoder = PlowEncoder(1, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
     elif encodertype == "WALZER":
-        print(f"Degree: {numofdegree} | Loss: {lossrate} | WinSize: {windowsize}")
+        print(f"Degree: {numofdegree} | WinSize: {windowsize}")
         encoder = WalzerEncoder(1, wdn_size=windowsize, redundancy=redundancy, maxdegree=numofdegree)
     elif encodertype == "LT":
         print(f"WinSize: {N}")
@@ -48,7 +67,7 @@ def run_experiment(config):
         print(f"WinSize: {windowsize} | Overlap: {overlap} ")
         encoder = SlidingFountainEncoder(np.array(robust_distribution(windowsize-1)), 1, wdn_size=windowsize, overlap=overlap)
     elif encodertype == "NOSC":
-        print(f"WinSize: {N} | Loss: {lossrate}")
+        print(f"WinSize: {N}")
         encoder = NoscEncoder(1, redundancy=redundancy, maxdegree=numofdegree, seed=seed)
     else:
         raise ValueError(f"Unsupported code type: {encodertype}")
@@ -60,24 +79,26 @@ def run_experiment(config):
     if encodertype in ["PLOW", "WALZER", "NOSC"]: degree = numofdegree*5
     elif  encodertype in ["LT", "SF"]: degree = windowsize
     if decodertype == "iterative":
-        decoder = IterativeDecoder(degree, 1, lossrate=lossrate)
+        decoder = IterativeDecoder(degree, 1)
     elif decodertype == "fcfp":
-        decoder = FIFODecoder(degree, 1, lossrate=lossrate) 
+        decoder = FIFODecoder(degree, 1) 
     else:
-        raise ValueError(f"Unsupported code type: {encodertype}")
-    decoder.put_bat(encoder.get_all())
+        raise ValueError(f"Unsupported code type: {decodertype}")
+    received_bat = channel.apply(encoder.get_all())
+    decoder.put_bat(received_bat)
     print("Decoding process starts...")
     
     # Check if decoding was successful
     # decoded_success = (decoder.get_all() == np.ones((N, 1024), dtype=np.uint8)).all()
-    decoded_success = (decoder.get_all() >= N * 0.99)
+    num_of_solved = decoder.get_all()
+    decoded_success = (num_of_solved >= N * 0.99)
     
     end = time.time()
     
     print(f"Experiment result: {'SUCCESS' if decoded_success else 'FAILED'}")
     print(f"Runtime of the program: {end - begin:.4f} seconds\n")
 
-    return decoded_success
+    return decoded_success, num_of_solved
 
 def binary_search(config, start, end):
     """ Performs a binary search on redundancy to find an optimal setting. """
@@ -106,25 +127,34 @@ if __name__ == "__main__":
     config = load_config(CONFIG_FILE_PATH)
 
     # Run experiments for each combination of parameters
-    random.seed(42)
-    seeds = random.sample(range(1, 1000000), 100)
-    print("seeds: ", seeds)
+    rdm_seed = int(time.time() * 1000) + os.getpid()
+    np.random.seed(rdm_seed % 1000000)
+    seeds = random.sample(range(1, 1000000), NUM_OF_TRIALS)
+    # print("seeds: ", seeds)
     for t in config["encodertype"]:
         for deg in config["numofdegree"]:
             for wsize in config["windowsize"]:
                 for loss in config["lossrate"]:
-                    for seed in seeds:
-                        cur_config = config.copy()
-                        cur_config.update({
-                            "encodertype": t,
-                            "numofdegree": deg,
-                            "windowsize": wsize,
-                            "lossrate": loss,
-                            "seed": seed
-                        })
-                        
-                        if config.get("binary_search", False):
-                            start, end = 1.0, 2.5
-                            binary_search(cur_config, start, end)
-                        else:
-                            run_experiment(cur_config)
+                    for oh in config["redundancy"]:
+                        for seed in seeds:
+                            cur_config = config.copy()
+                            cur_config.update({
+                                "encodertype": t,
+                                "numofdegree": deg,
+                                "windowsize": wsize,
+                                "lossrate": loss,
+                                "redundancy": oh,
+                                "seed": seed
+                            })
+                            
+                            if config.get("binary_search", False):
+                                start, end = 1.0, 2.5
+                                binary_search(cur_config, start, end)
+                            else:
+                                success, num_of_solved = run_experiment(cur_config)
+                                with open(f'experiments/{t}_{deg}_{wsize}_{config["channeltype"]}_{loss}_{oh}.csv', "a", newline="") as f:
+                                    writer = csv.writer(f)
+                                    writer.writerow([success, num_of_solved, seed])
+
+
+
