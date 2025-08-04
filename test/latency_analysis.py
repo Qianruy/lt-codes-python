@@ -6,8 +6,9 @@ import glob
 def calculate_statistics(differences):
     avg = np.mean(differences)
     median = np.median(differences)
+    max_diff = np.max(differences)
     percentile_95 = np.percentile(differences, 95)
-    return avg, median, percentile_95
+    return avg, median, max_diff, percentile_95
 
 # Read the CSV file
 file_pattern = "./experiments/sf_20250603*_0.0_1.08.csv"  
@@ -37,9 +38,10 @@ for filename in file_list:
                 continue
 
 # Calculate statistics
-avg, median, percentile_95 = calculate_statistics(differences)
+avg, median, max_diff, percentile_95 = calculate_statistics(differences)
 
 # Print results
 print(f"Average: {avg}")
 print(f"Median: {median}")
+print(f"Max Difference (Expected buffer size): {max_diff}")
 print(f"95th Percentile: {percentile_95}")
