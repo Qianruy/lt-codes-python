@@ -93,7 +93,7 @@ used_wdn_size = 600
 u_seed = 142857
 
 
-encoder = PlowEncoder(1, wdn_size=300, redundancy=redundancy, maxdegree=3, seed = u_seed)
+encoder = PlowEncoder(1, wdn_size=used_wdn_size, redundancy=redundancy, maxdegree=3, seed = u_seed)
 encoder.put_bat(np.ones((k, 1), dtype=np.uint8))
 
 # Get the encoding for a batch of codewords
