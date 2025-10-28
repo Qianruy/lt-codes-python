@@ -8,7 +8,8 @@ class PlowEncoder(Encoder):
     @field(ring) the ring buffer for all inputs
     """
     def __init__(self, block: int, wdn_size: int = 200, redundancy: int = 1.2, 
-                 mindegree: int = 3, maxdegree: int = 5, seed: int = 42, mode: int = 1):
+                 mindegree: int = 3, maxdegree: int = 5, seed: int = 42, 
+                 tail_reduction: bool = False, mode: int = 1):
         """
         """
         super().__init__()
@@ -16,6 +17,7 @@ class PlowEncoder(Encoder):
         self.mindegree = mindegree; self.maxdegree = maxdegree
         self.data = np.zeros((1, block), dtype=np.uint8)
         self.rng = np.random.default_rng(seed=seed)
+        self.has_tail = tail_reduction
         self.mode = mode
 
     def get_one(self) -> Codeword:
@@ -28,10 +30,12 @@ class PlowEncoder(Encoder):
         """
         get codeword from encoder
         """
-        batch = math.ceil(self.data.shape[0] * self.redundancy)
-        degrees = np.zeros(batch, dtype=np.int8)
-        seeds = self.rng.integers(0, int(1e6), size=batch)
-        indices = np.zeros((batch, self.maxdegree*5), dtype=np.int32)
+        tail = 0; batch = math.ceil(self.data.shape[0] * self.redundancy)
+        if self.has_tail: tail = math.ceil(self.wdn * self.redundancy) # add tail in the end
+        seqno = np.arange(1, 1+batch+tail, dtype=np.int32)
+        degrees = np.zeros(batch+tail, dtype=np.int32)
+        seeds = self.rng.integers(0, int(1e6), size=batch+tail)
+        indices = np.zeros((batch+tail, self.maxdegree*5), dtype=np.int32)
 
         def fill(b):
             # generate edges for each source symbol to connect the codewords
@@ -56,16 +60,26 @@ class PlowEncoder(Encoder):
                 # Calculate the index based on the random point
                 # while selected_index == -1 or selected_index in selected:
                 selected_index = max(0, int(b * self.redundancy + random_point + 1))
+                # Add the exception handler
+                if selected_index in selected:
+                    random_point = rng.binomial(encode_range - 1, upper_bound)
+                    selected_index = max(0, int(b * self.redundancy + random_point + 1))
                 assert(selected_index not in selected)
                 selected.append(selected_index)
-                if selected_index >= batch: continue
+                if selected_index >= batch:
+                    if not self.has_tail: continue
+                    # tail reduction
+                    else: 
+                        assert(batch >= codeword_idx)
+                        scaling = (codeword_idx - batch + tail) / (2 * tail)
+                        selected_index = max(0, int(b * self.redundancy + random_point * scaling + 1)) 
                 indices[selected_index][degrees[selected_index]] = b
                 degrees[selected_index] += 1
             # if b < 100: print(b, selected)
         Parallel(n_jobs=4, require='sharedmem')(delayed(fill)(b) for b in range(1, self.data.shape[0]))
         print("Maximum degree number of the codewords: {}".format(degrees.max()))
         data = np.bitwise_xor.reduce(self.data[indices], axis=1)
-        return CodewordBatch(indices, data, degrees)
+        return CodewordBatch.from_dense(seqno, indices, degrees, data)
 
 
     def put_one(self, data: np.ndarray):

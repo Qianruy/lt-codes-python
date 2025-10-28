@@ -1,10 +1,11 @@
 from .base_channel import *
 
 class GE_Channel(Channel):
-    def __init__(self, alpha, beta, epsilon):
+    def __init__(self, alpha, beta, epsilon, delta = 1):
         self.alpha = alpha
         self.beta = beta
         self.eps = epsilon
+        self.delta = delta
 
     def model(self, num_packets):
         isBadState = False
@@ -17,7 +18,8 @@ class GE_Channel(Channel):
                 if np.random.rand() < self.alpha:
                     isBadState = True  
             else: 
-                drop_mask[i] = True # burst loss
+                if np.random.rand() < self.delta:
+                    drop_mask[i] = True # burst loss when delta = 1
                 if np.random.rand() < self.beta: # end burst loss
                     isBadState = False
         return drop_mask

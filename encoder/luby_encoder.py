@@ -17,6 +17,7 @@ class LubyEncoder(Encoder):
         self.data = np.zeros((1, block), dtype=np.uint8)
         self.prob = dd.cumsum(0); self.prob[-1] = 1
         self.rng = np.random.default_rng(seed=seed)
+        self._seq_counter = 0
 
     def get_one(self) -> Codeword:
         """
@@ -27,7 +28,10 @@ class LubyEncoder(Encoder):
         indices = (np.arange(1, self.prob.shape[0] + 1) <= degree) * indices
         # indices = self.rng.choice(np.arange(1, self.data.shape[0]), (degree,), replace=False)
         data = np.bitwise_xor.reduce(self.data[indices])
-        return Codeword(indices, data, degree)
+        neighbors = indices[indices > 0]
+        seqno = self._seq_counter
+        self._seq_counter += 1
+        return Codeword(seqno=seqno, index=neighbors, data=data, degree=neighbors.size)
 
     def get_bat(self, batch: int) -> CodewordBatch:
         """
@@ -44,8 +48,15 @@ class LubyEncoder(Encoder):
             indices[b] = rng.choice(np.arange(1, self.data.shape[0]), (self.prob.shape[0],), replace=False)
         Parallel(n_jobs=4, require='sharedmem')(fill(b) for b in range(batch))
         indices = (np.arange(1, self.prob.shape[0] + 1) <= degrees.reshape(-1, 1)) * indices
+        # for i in range(len(indices)):
+        #     print(i, np.count_nonzero(indices[i]), indices[i])
         data = np.bitwise_xor.reduce(self.data[indices], axis=1)
-        return CodewordBatch(indices, data, degrees)
+        print("Maximum degree number of the codewords: {}".format(degrees.max()))
+        start_seq = self._seq_counter
+        seqno = np.arange(start_seq, start_seq + batch, dtype=np.int32)
+        self._seq_counter += batch
+        degrees = degrees.astype(np.int32, copy=False)
+        return CodewordBatch.from_dense(seqno, indices, degrees, data)
 
     def get_all(self) -> CodewordBatch:
         batch = int(self.data.shape[0] * self.redundancy)

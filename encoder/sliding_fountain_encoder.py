@@ -34,7 +34,11 @@ class SlidingFountainEncoder(LubyEncoder):
                 if valid_indices.size > 0:
                     data[i] = np.bitwise_xor.reduce(self.data[valid_indices], axis=0)
 
-        return CodewordBatch(indices, data, degrees)
+        start_seq = self._seq_counter
+        seqno = np.arange(start_seq, start_seq + batch, dtype=np.int32)
+        self._seq_counter += batch
+        degrees = degrees.astype(np.int32, copy=False)
+        return CodewordBatch.from_dense(seqno, indices, degrees, data)
 
 
     def shift_window(self):
@@ -56,11 +60,7 @@ class SlidingFountainEncoder(LubyEncoder):
     
     def get_all(self) -> CodewordBatch:
         print("sf.get_all()")
-        codebatch = CodewordBatch(
-            index=np.zeros((0, self.prob.shape[0]), dtype=np.int64), 
-            data=np.zeros((0, self.block), dtype=np.uint8), 
-            degree=np.zeros((0, ), dtype=np.int64)
-        )
+        codebatch = CodewordBatch.empty(self.block)
         print("initialization success")
         shift = int((1-self.overlap) * self.wdn_size)
         for i in range((self.data.shape[0]-self.wdn_size)//shift + 1):
@@ -71,7 +71,7 @@ class SlidingFountainEncoder(LubyEncoder):
             print(f"One batch joined in round {i}!")
             self.shift_window()
             self.remove_bat(shift)
-        print(f"Number of codewords: {codebatch.index.shape[0]}")
+        print(f"Number of codewords: {codebatch.num_codewords}")
         return codebatch
 
     

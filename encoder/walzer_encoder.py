@@ -7,7 +7,8 @@ class WalzerEncoder(Encoder):
     Walzer Encoder for real time streaming
     """
     def __init__(self, block: int, wdn_size: int = 200, redundancy: int = 1.2, 
-                 mindegree: int = 3, maxdegree: int = 5, seed: int = 42, mode = 1):
+                 mindegree: int = 3, maxdegree: int = 5, seed: int = 42, 
+                 has_tail: bool = True, mode: int = 1):
         """
         """
         super().__init__()
@@ -15,6 +16,7 @@ class WalzerEncoder(Encoder):
         self.mindegree = mindegree; self.maxdegree = maxdegree
         self.data = np.zeros((1, block), dtype=np.uint8)
         self.rng = np.random.default_rng(seed=seed)
+        self.has_tail = has_tail
         self.mode = mode
 
     def get_one(self) -> Codeword:
@@ -27,10 +29,11 @@ class WalzerEncoder(Encoder):
         """
         get codeword from encoder
         """
-        batch = math.ceil(self.data.shape[0] * self.redundancy)
-        degrees = np.zeros(batch, dtype=np.int8)
-        seeds = self.rng.integers(0, int(1e6), size=batch)
-        indices = np.zeros((batch, self.maxdegree*5), dtype=np.int32)
+        tail = 0; batch = math.ceil(self.data.shape[0] * self.redundancy)
+        if self.has_tail: tail = math.ceil(self.wdn * self.redundancy)
+        degrees = np.zeros(batch+tail, dtype=np.int32)
+        seeds = self.rng.integers(0, int(1e6), size=batch+tail)
+        indices = np.zeros((batch+tail, self.maxdegree*5), dtype=np.int32)
 
         def fill(b):
             # generate edges for each source symbol to connect the codewords
@@ -58,7 +61,7 @@ class WalzerEncoder(Encoder):
             selected = [x + int(b*self.redundancy) for x in list(selected)]
             for selected_index in selected:
                 selected_index = int(selected_index)
-                if selected_index >= batch: continue
+                if selected_index >= batch and not self.has_tail: continue
                 indices[selected_index][degrees[selected_index]] = b
                 degrees[selected_index] += 1
 
@@ -66,7 +69,8 @@ class WalzerEncoder(Encoder):
         Parallel(n_jobs=4, require='sharedmem')(delayed(fill)(b) for b in range(1, self.data.shape[0]))
         print("Maximum degree number of the codewords: {}".format(degrees.max()))
         data = np.bitwise_xor.reduce(self.data[indices], axis=1)
-        return CodewordBatch(indices, data, degrees)
+        seqno = np.arange(1, indices.shape[0] + 1, dtype=np.int32)
+        return CodewordBatch.from_dense(seqno, indices, degrees, data)
 
 
     def put_one(self, data: np.ndarray):

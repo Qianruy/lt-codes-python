@@ -41,241 +41,211 @@ class Decoder(ABC):
         """
         pass
 
-@njit(parallel = True, nogil=True)
-def update_buffer(buff_index, buff_degree, buff_data, indices_set, data):
-    """ 
-    Optimized update function using Numba to process buffer modifications. 
+def batch_to_csr(indices: np.ndarray, degree: np.ndarray):
     """
-    num_codewords = buff_data.shape[0]
-    num_source = data.shape[0]
-
-    # Precompute indices as a set for fast lookups
-    indices = set(indices_set)
-
-    for i in prange(num_codewords):  # prange enables parallelism
-        links = np.zeros(buff_index[i].size, dtype=np.bool_)
-        for j in range(buff_index[i].size):
-            if buff_index[i, j] in indices:
-                links[j] = True
-
-        if np.any(links):  
-            buff_index[i] *= ~links  # remove matched indices
-            buff_degree[i] -= np.count_nonzero(links)  # reduce degree
-
-            # Perform XOR reduction (manual for speed)
-            removal = np.zeros(num_source, dtype=np.bool_)
-            for j in prange(1, num_source+1):
-                if j in buff_index[i][links]:
-                    removal[j] = True
-            xor_value = np.uint8(0)
-            for value in data[removal][0]:
-                xor_value ^= value
-            buff_data[i] = xor_value
-
-def recover_graph(symbols, blocks_quantity):
-    """ Get back the same random indexes (or neighbors), thanks to the symbol id as seed.
-    For an easy implementation purpose, we register the indexes as property of the Symbols objects.
+    row_ptr: np.ndarray, shape (M+1,)
+        Cumulative sum of degrees for each codeword
+    src_idx_flat : np.ndarray, shape (nnz,)
+        Flattened list of all source indices, concatenated row by row.
     """
+    M = indices.shape[0]
+    assert(np.all(degree >= 0))
+    row_ptr = np.zeros(M+1, np.int32)
+    row_ptr[1:] = np.cumsum(degree)
+    nnz = int(row_ptr[-1])
+    src_idx_flat = np.empty(nnz, np.int32)
+    pos = 0
+    for m in range(M):
+        dm = int(degree[m]) # number of valid indices 
+        vi = indices[m, :dm]
+        # if vi.dtype.kind == 'i':
+        #     dm = int(np.sum(vi >= 0)) # drop any -1 pads if present
+        #     vi = vi[:dm]
+        src_idx_flat[pos:pos+dm] = vi
+        pos += dm
+    return row_ptr, src_idx_flat
 
-    for symbol in symbols:
-        
-        neighbors, deg = generate_indexes(symbol.index, symbol.degree, 0, blocks_quantity)
-        symbol.neighbors = {x for x in neighbors}
-        symbol.degree = deg
-
-        if config["VERBOSE"]:
-            symbol.log(blocks_quantity)
-
-    return symbols
-
-def reduce_neighbors(block_index, blocks, symbols, redundancy, code_type):
-    """ Loop over the remaining symbols to find for a common link between 
-    each symbol and the last solved block `block`
-
-    To avoid increasing complexity and another for loop, the neighbors are stored as dictionnary
-    which enable to directly delete the entry after XORing back.
+@njit
+def csr2csc(M, N, row_ptr, src_idx_flat):
     """
-    if code_type in ["PLOW", "WALZER"]:
-        # start = max(0,len(symbols)-int(WINDOWSIZE*redundancy)-10)
-        # end = min(len(symbols),start + int(WINDOWSIZE*redundancy)+10)
-        start = max(0, block_index)
-        end = min(len(symbols),int(block_index*redundancy) + int(config["WINDOWSIZE"]*redundancy))
-    elif code_type == "LT":
-        start, end = 0, len(symbols)
+    Convert a codeword adjacency stored in CSR form into CSC.
 
-    for other_symbol in symbols[start:end]:
-        if other_symbol.degree > 1 and block_index in other_symbol.neighbors:
-        
-            # XOR the data and remove the index from the neighbors
-            other_symbol.data = np.bitwise_xor(blocks[block_index], other_symbol.data)
-            other_symbol.neighbors.remove(block_index)
+    Parameters
+    ----------
+    M : int
+        Number of codeword rows.
+    N : int
+        Number of source symbols (columns). This should cover the maximum
+        source index contained in `src_idx_flat`.
+    row_ptr : np.ndarray
+        CSR row pointer array of length M+1 where row_ptr[i+1] - row_ptr[i]
+        gives the number of neighbours (degree) for codeword i.
+    src_idx_flat : np.ndarray
+        Flattened list of neighbour source indices for each codeword row.
+        Entries marked with -1 are treated as removed edges and ignored.
 
-            other_symbol.degree -= 1
-            
-            if config["VERBOSE"]:
-                print("XOR block_{} with symbol_{} :".format(block_index, other_symbol.index), list(other_symbol.neighbors)) 
-
-def decode_incremental(symbols, recovered_blocks, solved_blocks_count, redundancy, code_type):
+    Returns
+    -------
+    col_ptr : np.ndarray
+        CSC column pointer array of length N+1. 
+    code_idx_flat : np.ndarray
+        Flattened list of codeword indices, grouped by source symbol.
     """
-    Incremental decoding function that takes in a symbol and updates the decoding state.
-    
-    Args:
-        symbols: Current received symbols.
-        recovered_blocks: Current list of recovered blocks.
-        solved_blocks_count: Number of successfully recovered blocks.
-    
-    Returns:
-        updated recovered_blocks and recovered_n.
+    nnz = src_idx_flat.size
+    col_ptr = np.zeros(N+1, np.int32)
+    code_idx_flat = np.empty(nnz, np.int32)
+    # Count valid edges for each source.
+    for e in range(nnz):
+        s = src_idx_flat[e]
+        if s >= 0:
+            col_ptr[s+1] += 1
+    # Prefix sum to build column offsets.
+    for i in range(1, N+1):
+        col_ptr[i] += col_ptr[i-1]
+    # Fill the codeword indices.
+    fill = col_ptr.copy()
+    for m in range(M):
+        start, end = row_ptr[m], row_ptr[m+1]
+        for e in range(start, end):
+            s = src_idx_flat[e]
+            if s < 0: continue
+            pos = fill[s]
+            code_idx_flat[pos] = m
+            fill[s] += 1
+    return col_ptr, code_idx_flat
+
+@njit(parallel=True, nogil=True)
+def peeling(row_ptr, src_idx_flat, col_ptr, code_idx_flat,
+            cw_data, src_data, src_known):
+
+    M = row_ptr.size - 1
+    B = cw_data.shape[1]
+
+    # compute unresolved degrees
+    degree = np.zeros(M, np.int32)
+    for m in range(M):
+        s, t = row_ptr[m], row_ptr[m+1]
+        cnt = 0
+        for e in range(s, t):
+            v = src_idx_flat[e]
+            if src_known[v] < 0:
+                cnt += 1
+        degree[m] = cnt
+
+    # ring queue of degree-1 checks
+    q = np.empty(max(1, 2*M), np.int64)
+    qh = 0; qt = 0
+    in_q = np.zeros(M, np.uint8)
+
+    def qpush(x):
+        nonlocal qt
+        nxt = (qt + 1) % q.size
+        if nxt == qh:  # full -> simple grow (rare)
+            newq = np.empty(q.size*2, np.int64)
+            # linearize
+            k = 0
+            i = qh
+            while i != qt:
+                newq[k] = q[i]
+                k += 1
+                i = (i + 1) % q.size
+            q[:] = newq[:q.size]  # Numba needs shapes fixed
+        if in_q[x] == 0:
+            q[qt] = x
+            qt = (qt + 1) % q.size
+            in_q[x] = 1
+
+    for m in range(M):
+        if degree[m] == 1:
+            qpush(m)
+
+    solved_total = 0
+
+    while qh != qt:
+        m = q[qh]; qh = (qh + 1) % q.size
+        in_q[m] = 0
+        if degree[m] != 1:
+            continue
+
+        # find the lone unknown var in row m
+        lone = -1
+        s, t = row_ptr[m], row_ptr[m+1]
+        for e in range(s, t):
+            v = src_idx_flat[e]
+            if src_known[v] < 0:
+                lone = v
+                break
+        if lone == -1:
+            continue
+
+        # resolve: x[lone] = current check block
+        for k in range(B):
+            src_data[lone, k] = cw_data[m, k]
+        src_known[lone] = 1
+        solved_total += 1
+
+        # peel from all checks containing this var
+        s2, t2 = col_ptr[lone], col_ptr[lone+1]
+        for ee in range(s2, t2):
+            m2 = code_idx_flat[ee]
+            if degree[m2] == 0:
+                continue
+            # XOR block
+            for k in range(B):
+                cw_data[m2, k] ^= src_data[lone, k]
+            # dec degree
+            dnew = degree[m2] - 1
+            if dnew < 0: dnew = 0
+            degree[m2] = dnew
+            if dnew == 1 and in_q[m2] == 0:
+                qpush(m2)
+
+    return solved_total, degree
+
+def update_buffer(row_ptr, src_idx_flat, buff_degree, buff_data,
+                  new_indices, src_data, col_ptr, code_idx_flat):
     """
-    symbols_n = len(symbols)
-    if config["VERBOSE"]: print(f"\nsymbol index: {symbols_n-1}")
-    assert symbols_n > 0, "There are no symbols to decode."
+    Peel newly solved source symbols from all connected codewords.
 
-    iteration_solved_count = 0
-    start = 1
-    start_time = time.time()
-    blocks_n = len(recovered_blocks)
-    total_delay = 0
+    Parameters
+    ----------
+    row_ptr, src_idx_flat : CSR representation of the bipartite graph.
+    buff_degree : array of current degrees per codeword (updated in place).
+    buff_data : codeword payload blocks (updated in place).
+    new_indices : np.ndarray of source indices resolved in this round.
+    src_data : matrix of decoded source blocks.
+    col_ptr, code_idx_flat : CSC view giving backlinks from source to codewords.
 
-    # Pre-process the most recent symbol
-    symbol = symbols[-1]
-    for idx in list(symbol.neighbors):
-        if recovered_blocks[idx] is not None:
-            if config["VERBOSE"]: print("XOR block_{} with previous info".format(idx))
-            symbol.data = np.bitwise_xor(recovered_blocks[idx], symbol.data)
-            symbol.neighbors.remove(idx)
-            symbol.degree -= 1
-
-    while iteration_solved_count > 0 or start:
-
-        iteration_solved_count = 0
-        start = 0
-
-        if symbols[-1].degree != 1: 
-            if config["VERBOSE"]: print(symbols[-1].degree, symbols[-1].neighbors)
-            break
-        for i, symbol in enumerate(symbols):
-            
-            # if symbol.degree and VERBOSE: 
-            #     print(symbol.index, symbol.degree)
-
-            if symbol.degree == 0: continue
-            if symbol.degree == 1:
-
-                iteration_solved_count += 1
-                block_index = next(iter(symbol.neighbors), None)
-                symbol.degree -= 1
-
-                if block_index is None or recovered_blocks[block_index] is not None:
-                    continue
-
-                recovered_blocks[block_index] = symbol.data
-                
-                if config["VERBOSE"]:
-                    print("Solved block_{} with symbol_{}".format(block_index, symbol.index))
-                    print("Delayed Timeframe: {}".format(symbols[-1].index-block_index))
-                total_delay += symbols[-1].index-block_index
-
-                # Update the count and log the processing
-                solved_blocks_count += 1
-                # log("Decoding", solved_blocks_count, blocks_n, start_time)
-        
-                # Reduce the degrees of other symbols that contains the solved block as neighbor
-                reduce_neighbors(block_index, recovered_blocks, symbols, redundancy, code_type) 
-
-    return solved_blocks_count, total_delay
-
-def decode(symbols, blocks_quantity, code_type):
-    """ Iterative decoding - Decodes all the passed symbols to build back the data as blocks. 
-    The function returns the data at the end of the process.
-    
-    1. Search for an output symbol of degree one
-        (a) If such an output symbol y exists move to step 2.
-        (b) If no output symbols of degree one exist, iterative decoding exits and decoding fails.
-    
-    2. Output symbol y has degree one. Thus, denoting its only neighbour as v, the
-        value of v is recovered by setting v = y.
-
-    3. Update.
-
-    4. If all k input symbols have been recovered, decoding is successful and iterative
-        decoding ends. Otherwise, go to step 1.
+    Returns
+    -------
+    List[int]
+        Codeword indices whose degree just dropped to 1 and should be
+        re-queued for the next decoding ripple.
     """
-
-    symbols_n = len(symbols)
-    print(f"\n#symbols: {symbols_n}")
-    assert symbols_n > 0, "There are no symbols to decode."
-
-    # We keep `blocks_n` notation and create the empty list
-    blocks_n = blocks_quantity
-    blocks = [None] * blocks_n
-    redundancy = len(symbols)/blocks_quantity
-
-    # Recover the degrees and associated neighbors using the seed (the index, cf. encoding).
-    # symbols = recover_graph(symbols, blocks_n)
-    # print("Graph built back. Ready for decoding.", flush=True)
-    
-    empty_symbol = 0
-    solved_blocks_count = 0
-    iteration_solved_count = 0
-    start_time = time.time()
-    total_delay = 0
-    
-    while iteration_solved_count > 0 or solved_blocks_count == 0:
-    
-        iteration_solved_count = 0
-        # Defined in LT process: the set of covered input symbols that have not yet been processed
-        ripple = set()
-        
-        print("Iteration begins:")
-        # Search for solvable symbols
-        for i, symbol in enumerate(symbols):
-
-            if symbol.degree: 
-                print(symbol.index, symbol.degree)
-
-            # Check the current degree. If it's 1 then we can recover data
-            if symbol.degree == 0: continue
-            if symbol.degree == 1: 
-
-                iteration_solved_count += 1 
-                block_index = next(iter(symbol.neighbors), None) 
-                symbol.degree -= 1
-                # symbols.pop(i)
-
-                # This symbol is redundant: another already helped decoding the same block
-                if block_index is None: 
-                    empty_symbol += 1
-                if block_index is None or blocks[block_index] is not None:
-                    continue
-
-                blocks[block_index] = symbol.data
-                ripple.add(block_index)
-
-                print("Solved block_{} with symbol_{}".format(block_index, symbol.index))
-                print("Delayed Timeframe: {}".format(symbol.index/redundancy-block_index))
-                total_delay += symbol.index/redundancy-block_index
-              
-                # Update the count and log the processing
-                solved_blocks_count += 1
-                log("Decoding", solved_blocks_count, blocks_n, start_time)
-
-                # Reduce the degrees of other symbols that contains the solved block as neighbor
-                reduce_neighbors(block_index, blocks, symbols, redundancy, code_type)
-
-        print("Size of current ripple: {}".format(len(ripple)))                       
-
-    # DEBUG 
-    degrees = {}         
-    for i, symbol in enumerate(symbols):
-        if symbol.degree == 0: continue
-        else: degrees[symbol.degree] = degrees.get(symbol.degree, 0) + 1
-    degrees_sorted = OrderedDict(sorted(degrees.items()))
-
-    print("\n----- Solved Blocks {:2}/{:2} ---".format(solved_blocks_count, blocks_n))
-    print(f"----- Empty Symbol: {empty_symbol} ---")
-    print(f"----- Avg Delayed Timeframe: {total_delay/solved_blocks_count} ---")
-    for deg, cnt in degrees_sorted.items():
-        print(f"{cnt} symbols with degree {deg}")
-
-    return np.asarray(blocks), solved_blocks_count
+    degree_one_rows = []
+    seen_rows = set()
+    block = buff_data.shape[1]
+    for idx in new_indices:
+        if idx < 0 or idx + 1 >= col_ptr.size:
+            continue
+        start, end = col_ptr[idx], col_ptr[idx + 1]
+        for pos in range(start, end):
+            row = code_idx_flat[pos]
+            if row < 0 or row >= buff_degree.size:
+                continue
+            row_start, row_end = row_ptr[row], row_ptr[row + 1]
+            for edge_pos in range(row_start, row_end):
+                if src_idx_flat[edge_pos] == idx:
+                    prev_deg = buff_degree[row]
+                    if prev_deg <= 0:
+                        break
+                    for k in range(block):
+                        buff_data[row, k] ^= src_data[idx, k]
+                    src_idx_flat[edge_pos] = -1
+                    new_deg = prev_deg - 1
+                    buff_degree[row] = new_deg if new_deg > 0 else 0
+                    if prev_deg > 1 and new_deg == 1 and row not in seen_rows:
+                        degree_one_rows.append(row)
+                        seen_rows.add(row)
+                    break
+    return degree_one_rows

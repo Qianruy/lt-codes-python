@@ -31,7 +31,7 @@ class NoscEncoder(Encoder):
         """
         batch = math.ceil(self.data.shape[0] * self.redundancy)
         print("batch size: ", batch)
-        degrees = np.zeros(batch, dtype=np.int8)
+        degrees = np.zeros(batch, dtype=np.int32)
         seeds = self.rng.integers(0, int(1e6), size=batch)
         indices = np.zeros((batch, self.maxdegree*5), dtype=np.int32)
         encode_range = batch
@@ -43,13 +43,20 @@ class NoscEncoder(Encoder):
             # Mode 1: original uniform dist, mode 2: add a determinist 1st edge
             if self.mode == 1:
                 selected = rng.choice(encode_range, size=self.maxdegree, replace=False)
+                # print(b, selected)
             elif self.mode == 2:
                 selected = rng.choice(encode_range, size=self.maxdegree-1, replace=False)
+                selected = [int(x) for x in selected]
+                while int(b*self.redundancy) in selected:
+                    selected = rng.choice(encode_range, size=self.maxdegree-1, replace=False)
+                    selected = [int(x) for x in selected]
+                assert(int(b*self.redundancy) not in selected)
                 selected = list(selected)+[int(b*self.redundancy)]
             selected.sort()
 
             for selected_index in selected:
                 selected_index = int(selected_index)
+                assert(selected_index < batch)
                 if selected_index >= batch: continue
                 indices[selected_index][degrees[selected_index]] = b
                 degrees[selected_index] += 1
@@ -58,7 +65,8 @@ class NoscEncoder(Encoder):
         Parallel(n_jobs=4, require='sharedmem')(delayed(fill)(b) for b in range(1, self.data.shape[0]))
         print("Maximum degree number of the codewords: {}".format(degrees.max()))
         data = np.bitwise_xor.reduce(self.data[indices], axis=1)
-        return CodewordBatch(indices, data, degrees)
+        seqno = np.arange(1, indices.shape[0] + 1, dtype=np.int32)
+        return CodewordBatch.from_dense(seqno, indices, degrees, data)
 
     def put_one(self, data: np.ndarray):
         """

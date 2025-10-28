@@ -17,12 +17,10 @@ class Channel(ABC):
         data: CodewordBatch of symbols or bits
         returns: corrupted version of data
         """
-        drop_mask = self.model(codeBatch.data.shape[0])
-        codeBatch.index = codeBatch.index[~drop_mask]
-        codeBatch.data = codeBatch.data[~drop_mask]
-        codeBatch.degree = codeBatch.degree[~drop_mask]
-        codeBatch.used = codeBatch.index.shape[0]
-        print(f"Applied loss: {np.count_nonzero(drop_mask)} codewords dropped out of {len(drop_mask)}")
+        drop_mask = self.model(codeBatch.num_codewords)
+        codeBatch.drop_rows(drop_mask)
+        if np.any(drop_mask):
+            print(f"Applied loss: {np.count_nonzero(drop_mask)} codewords dropped out of {len(drop_mask)}")
         return codeBatch
 
 class BEC_Channel(Channel):
