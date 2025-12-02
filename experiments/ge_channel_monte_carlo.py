@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = ["numpy"]
+# ///
 import argparse
 import json
 import numpy as np
