@@ -1,13 +1,35 @@
 {
-    "filename": "benchmarks/dummy",
-    "number_of_source": 100000,
-    "systematic": false,
-    "verbose": false,
-    "codetype": ["SF"],
-    "windowsize": [20000],
-    "lossrate":[0],
-    "numofdegree": [3],
-    "overlap": 0.5,
-    "binary_search": false,
-    "redundancy": 1.03
+    "experiment": {
+        "dataset": "benchmarks/dummy.bin",
+        "num_sources": 100000,
+        "symbol_size": 1,
+        "systematic": false,
+        "verbose": false,
+        "binary_search": false,
+        "tail_reduction": true,
+        "num_trials": 40
+    },
+    "encoder": {
+        "types": ["PLOW"],
+        "degrees": [4],
+        "window_sizes": [600],
+        "redundancies": [1.24],
+        "mode": 1,
+        "overlap": 0.5,
+        "extra_lt_ratio": 1.0
+    },
+    "decoder": {
+        "type": "fcfp"
+    },
+    "channel": {
+        "type": "BEC",
+        "loss_rates": [0.1],
+        "alpha": 0.001,
+        "beta": 0.01,
+        "epsilon": 0.01,
+        "delta": 0.1
+    },
+    "output": {
+        "results_dir": "experiments/results"
+    }
 }
