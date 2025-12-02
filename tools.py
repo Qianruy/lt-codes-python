@@ -6,17 +6,10 @@ from abc import *
 from dataclasses import dataclass
 from typing import *
 
-config = {
-    "SYSTEMATIC": False,
-    "VERBOSE": False,
-    "MAX_DEGREE": 5,
-    "WINDOWSIZE": 600,
-    "LOSS_PROBABILITY": 0.01,
-    "PACKET_SIZE": 128, # select from 65536, 32768, 16384, 4096, 1024, 512, 128
-    "ROBUST_FAILURE_PROBABILITY": 0.01,
-    "NUMPY_TYPE": np.uint8, # select from np.uint64, np.uint32, np.uint16, np.uint8
-    "EPSILON": 0.0001
-}
+PACKET_SIZE = 128, # select from 65536, 32768, 16384, 4096, 1024, 512, 128
+ROBUST_FAILURE_PROBABILITY = 0.01
+NUMPY_TYPE = np.uint16, # select from np.uint64, np.uint32, np.uint16, np.uint8
+EPSILON = 0.0001
 
 # for alignement, index=0 corresponds to no input. 
 # actual packet indices start from 1. 
@@ -237,46 +230,5 @@ class RingBuff:
         data = self.data[s:e] if s < e else np.concatenate([self.data[s:], self.data[:e]], axis=-1)
         return head, data
 
-def file_read(name: str, block: int) -> Tuple[np.ndarray, int]:
-    """
-    @param(name): the name of file
-    @param(block): the block size of file
-    @return(data, size): 
-        data: the bytes from file, padded and reshaped to [..., block]
-        size: the bytes size before padding
-    """
-    with open(name, 'rb') as f: 
-        buffer = f.read()
-    data = np.frombuffer(buffer, dtype=np.uint8)
-    size = (data.shape[-1] + block - 1) // block
-    size = size * block
-    pad  = np.zeros(size - data.shape[-1], dtype=np.uint8)
-    size = data.shape[-1]
-    data = np.concatenate([data, pad]).reshape(-1, block)
-    return data, size
-
-def generate_random_text_file(filename, filesize):
-    chars = string.ascii_letters + string.digits + string.punctuation + ' '
-
-    with open(filename, 'w') as f:
-        size_written = 0
-        while size_written < filesize:
-            chunk_size = min(1024, filesize - size_written)
-            random_text = ''.join(random.choice(chars) for _ in range(chunk_size))
-            f.write(random_text)
-            size_written += chunk_size
-
-    print(f"{filename} successfully generated, size = {filesize} bytes.")
-
 if __name__ == '__main__':
-    # Test function 'file_read()'
-    print(file_read("benchmarks/benchmark.log", 1024)[0].shape)
-
-    # Test function 'generate_random_text_file'
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('filename', type=str, help='file name')
-    # parser.add_argument('filesize', type=int, help='file size')
-
-    # args = parser.parse_args()
-
-    # generate_random_text_file(args.filename, args.filesize)
+    pass
