@@ -163,11 +163,11 @@ class FIFODecoder(Decoder):
                 self.data[indices[valid], :] = self.buff.data[rows[valid], :]
 
             indices = np.unique(indices[valid])
-            # indices_list = ",".join(str(int(idx)) for idx in indices)
-            # with open(logfile, mode='a', newline='') as f:
-            #     writer = csv.writer(f)
-            #     seq_idx = min(max(row, 0), self.buff.seqno.size - 1)
-            #     writer.writerow([self.buff.seqno[seq_idx], indices_list])
+            indices_list = ",".join(str(int(idx)) for idx in indices)
+            with open(logfile, mode='a', newline='') as f:
+                writer = csv.writer(f)
+                seq_idx = min(max(rows[-1], 0), self.buff.seqno.size - 1)
+                writer.writerow([self.buff.seqno[seq_idx], indices_list])
 
             new_indices_mask = ~self.collected[indices]
             new_indices = indices[new_indices_mask]
