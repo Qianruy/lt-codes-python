@@ -1,8 +1,5 @@
+import math
 from tools import *
-from symbols import *
-
-EPSILON = config["EPSILON"]
-ROBUST_FAILURE_PROBABILITY = config["ROBUST_FAILURE_PROBABILITY"]
 
 def ideal_distribution(N):
     """ Create the ideal soliton distribution. 
